@@ -3,6 +3,26 @@ body {
   padding:0px;
   margin:0px;
 }
+
+.p-confirm-dialog {
+  padding:1rem !important;
+  border-radius:12px;
+  background:white;
+}
+
+.p-confirm-dialog .p-dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  padding: 0.5rem; /* Espaciado interno */
+}
+
+.p-confirm-dialog .p-button {
+  padding: 0.4rem 0.8rem !important; /* Tamaño de los botones */
+  font-size: 0.9rem; /* Tamaño de la fuente */
+}
+
+
+
 .p-datatable-header.ng-star-inserted {
   background:#f8f9fa;
   color: #495057;

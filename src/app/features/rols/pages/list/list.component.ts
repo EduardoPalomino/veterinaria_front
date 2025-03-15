@@ -99,7 +99,20 @@ export class RolListComponent implements OnInit {
     }
   }
 
-  deleteRol(rol: Rol) {
+  confirmarEliminacion(rol: Rol) {
+    console.log("Clic en eliminar:", rol);
+    this.confirmationService.confirm({
+      message: `¿Estás seguro de eliminar el Rol: ${rol.descripcion}?`,
+      header: 'Confirmación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      accept: () => {
+        this.deleteRol(rol);
+      }
+    });
+  }
+  /*deleteRol(rol: Rol) {
     this.rolService.delete(rol._id).subscribe({
       next: () => {
         this.loadRols();
@@ -108,6 +121,27 @@ export class RolListComponent implements OnInit {
       error: (err) => {
         console.error('Error al eliminar el rol:', err);
         this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar el rol' });
+      }
+    });
+  }*/
+
+  deleteRol(rol: Rol) {
+    this.rolService.delete(rol._id).subscribe({
+      next: () => {
+        this.loadRols();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: `Rol "${rol.descripcion}" eliminado correctamente`
+        });
+      },
+      error: (err) => {
+        console.error('Error al eliminar el rol:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: `No se pudo eliminar el rol "${rol.descripcion}"`
+        });
       }
     });
   }
