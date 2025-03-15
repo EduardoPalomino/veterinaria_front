@@ -13,18 +13,18 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 
 // PrimeNG Services
-import { MessageService } from 'primeng/api';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 // Componentes
-import { UserListComponent } from './pages/list/list.component';
+import { RolListComponent } from './pages/list/list.component';
 import { FormComponent } from './pages/form/form.component';
 
 // Servicios
-import { UserService } from './services/user.service';
+import { RolService } from './services/rol.service';
 
 @NgModule({
   declarations: [
-    UserListComponent,
+    RolListComponent,
     FormComponent
   ],
   imports: [
@@ -38,15 +38,18 @@ import { UserService } from './services/user.service';
     InputTextModule,
     DialogModule,
     DropdownModule,
-    ToastModule
+    ToastModule,
+    ConfirmDialogModule
+
   ],
   providers: [
     MessageService,
-    UserService
+    ConfirmationService,
+    RolService
   ],
   exports: [
-    UserListComponent,
+    RolListComponent,
     FormComponent
   ]
 })
-export class UsersModule {}
+export class RolsModule {}

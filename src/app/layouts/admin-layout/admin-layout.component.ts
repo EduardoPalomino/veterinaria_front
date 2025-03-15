@@ -15,11 +15,7 @@ export class AdminLayoutComponent implements OnInit {
 
   ngOnInit() {
     this.menuItems = [
-      {
-        label: 'Dashboard',
-        icon: 'pi pi-home',
-        routerLink: '/admin/dashboard'
-      },
+      { label: 'Dashboard', icon: 'pi pi-home', routerLink: '/admin/dashboard' },
       {
         label: 'Usuarios',
         icon: 'pi pi-users',
@@ -28,16 +24,14 @@ export class AdminLayoutComponent implements OnInit {
           { label: 'Crear Usuario', icon: 'pi pi-user-plus', routerLink: '/admin/users/create' }
         ]
       },
-
       {
         label: 'Roles',
         icon: 'pi pi-lock',
         items: [
-          { label: 'Listado de Roles', icon: 'pi pi-list', routerLink: '/admin/roles' },
+          { label: 'Listado de Roles', icon: 'pi pi-list', routerLink: '/admin/rols' },
           { label: 'Crear Rol', icon: 'pi pi-plus-circle', routerLink: '/admin/roles/create' }
         ]
       },
-
       {
         label: 'Clientes',
         icon: 'pi pi-id-card',
@@ -87,24 +81,12 @@ export class AdminLayoutComponent implements OnInit {
           { label: 'Reporte de Inventario', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes/inventario' }
         ]
       },
-      {
-        label: 'Configuración',
-        icon: 'pi pi-cog',
-        routerLink: '/admin/configuracion'
-      }
+      { label: 'Configuración', icon: 'pi pi-cog', routerLink: '/admin/configuracion' }
     ];
 
     this.userMenu = [
-      {
-        label: 'Perfil',
-        icon: 'pi pi-user',
-        routerLink: '/admin/perfil'
-      },
-      {
-        label: 'Cerrar Sesión',
-        icon: 'pi pi-power-off',
-        command: () => this.logout()
-      }
+      { label: 'Perfil', icon: 'pi pi-user', routerLink: '/admin/perfil' },
+      { label: 'Cerrar Sesión', icon: 'pi pi-power-off', command: () => this.logout() }
     ];
   }
 
@@ -118,6 +100,5 @@ export class AdminLayoutComponent implements OnInit {
 
   logout() {
     console.log('Cerrando sesión...');
-    // Aquí puedes implementar la lógica real de logout
   }
 }

@@ -1,15 +1,14 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { UserService } from '../../services/user.service';
+import { User } from '../../interfaces/user.interface';
 
 @Component({
   selector: 'app-user-list',
   templateUrl: './list.component.html'
 })
 export class UserListComponent implements OnInit {
-  users = [
-    { id: 1, name: 'Juan Pérez', email: 'juan@example.com', role: 'Admin' },
-    { id: 2, name: 'María López', email: 'maria@example.com', role: 'User' },
-  ];
+  users: User[] = [];
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
@@ -18,23 +17,41 @@ export class UserListComponent implements OnInit {
     { label: 'Usuario', value: 'User' },
   ];
 
-  userForm: FormGroup = this.fb.group({
-    id: [null],
-    name: ['', Validators.required],
-    email: ['', [Validators.required, Validators.email]],
-    role: ['', Validators.required]
-  });
+  userForm: FormGroup;
 
-  constructor(private fb: FormBuilder) {}
-
-  ngOnInit(): void {}
-
-  applyGlobalFilter() {
-    // Aquí debes implementar la lógica real de filtro
-    console.log('Filtrando:', this.globalFilter);
+  constructor(private fb: FormBuilder, private userService: UserService) {
+    this.userForm = this.fb.group({
+      id: [null],
+      nombre: ['', Validators.required],
+      apellido: ['', Validators.required],
+      email: ['', [Validators.required, Validators.email]],
+      password: ['', Validators.required],
+      role: ['', Validators.required]
+    });
   }
 
-  openModal(mode: 'Nuevo' | 'Editar', user?: any) {
+  ngOnInit(): void {
+    this.loadUsers();
+  }
+
+  loadUsers() {
+    this.userService.getAll().subscribe({
+      next: (data) => {
+        this.users = data;
+      },
+      error: (err) => {
+        console.error('Error al cargar usuarios:', err);
+      }
+    });
+  }
+
+  applyGlobalFilter() {
+    console.log('Filtrando:', this.globalFilter);
+    // Aquí puedes agregar lógica para filtrar la lista de usuarios en el frontend
+  }
+
+  openModal(mode: 'Nuevo' | 'Editar', user?: User) {
+    console.log(mode);
     this.modalTitle = `${mode} Usuario`;
     this.modalVisible = true;
 
@@ -50,19 +67,26 @@ export class UserListComponent implements OnInit {
       const user = this.userForm.value;
 
       if (user.id) {
-        // Editar
-        this.users = this.users.map(u => u.id === user.id ? user : u);
+        // Editar usuario en el backend
+        this.userService.update(user.id, user).subscribe(() => {
+          this.loadUsers(); // Recargar lista después de editar
+        });
       } else {
-        // Nuevo
-        user.id = this.users.length + 1;
-        this.users.push(user);
+        // Crear usuario en el backend
+        this.userService.create(user).subscribe(() => {
+          this.loadUsers(); // Recargar lista después de crear
+        });
       }
 
       this.modalVisible = false;
     }
   }
 
-  deleteUser(user: any) {
-    this.users = this.users.filter(u => u.id !== user.id);
+  deleteUser(user: User) {
+    if (confirm(`¿Seguro que quieres eliminar a ${user.nombre}?`)) {
+      this.userService.delete(user._id).subscribe(() => {
+        this.loadUsers(); // Recargar lista después de eliminar
+      });
+    }
   }
 }

@@ -4,7 +4,7 @@ import { RouterModule, Routes } from '@angular/router';
 // ✅ Importa correctamente los componentes
 import { AdminLayoutComponent } from './layouts/admin-layout/admin-layout.component';
 import { UserListComponent } from './features/users/pages/list/list.component';  // <- Asegúrate de que sea el nombre correcto de la carpeta y el componente
-
+import { RolListComponent } from './features/rols/pages/list/list.component';
 const routes: Routes = [
   {
     path: '',
@@ -23,6 +23,10 @@ const routes: Routes = [
       {
         path: 'users',
         component: UserListComponent
+      },
+      {
+        path:'rols',
+        component:RolListComponent
       }
     ]
   },

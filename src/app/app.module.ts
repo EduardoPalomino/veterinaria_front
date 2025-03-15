@@ -20,6 +20,7 @@ import { FormsModule } from '@angular/forms';
 // Importa el nuevo LayoutsModule
 import { LayoutsModule } from './layouts/layouts.module';
 import { UsersModule } from './features/users/users.module';
+import { RolsModule } from './features/rols/rols.module';
 @NgModule({
   declarations: [
     AppComponent
@@ -30,6 +31,7 @@ import { UsersModule } from './features/users/users.module';
     AppRoutingModule,
     LayoutsModule,
     UsersModule,
+    RolsModule,
     CalendarModule,
     TableModule,
     CardModule,
