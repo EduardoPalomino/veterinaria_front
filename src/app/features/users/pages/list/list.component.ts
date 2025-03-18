@@ -1,6 +1,10 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { UserService } from '../../services/user.service';
+
+import { RolService } from '../../../rols/services/rol.service';
+import { Rol } from '../../../rols/interfaces/rol.interface';
+
 import { User } from '../../interfaces/user.interface';
 
 @Component({
@@ -12,26 +16,24 @@ export class UserListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
-  roles = [
-    { label: 'Administrador', value: 'Admin' },
-    { label: 'Usuario', value: 'User' },
-  ];
-
+  roles: Rol[]= [];
+  selected_rol:{ label: string; value: string }[]=[];
   userForm: FormGroup;
 
-  constructor(private fb: FormBuilder, private userService: UserService) {
+  constructor(private fb: FormBuilder, private userService: UserService,private rolService:RolService) {
     this.userForm = this.fb.group({
       id: [null],
       nombre: ['', Validators.required],
       apellido: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
       password: ['', Validators.required],
-      role: ['', Validators.required]
+      rol_id: ['', Validators.required]
     });
   }
 
   ngOnInit(): void {
     this.loadUsers();
+    this.loadRols();
   }
 
   loadUsers() {
@@ -45,6 +47,23 @@ export class UserListComponent implements OnInit {
     });
   }
 
+
+  loadRols() {
+    this.rolService.getAll().subscribe({
+      next: (data) => {
+        this.roles = data;
+        this.selected_rol = this.roles.map(rol => ({
+          label: rol.descripcion,
+          value: rol._id
+        }));
+      },
+      error: (err) => {
+        console.error('Error al cargar roles:', err);
+      }
+    });
+  }
+
+
   applyGlobalFilter() {
     console.log('Filtrando:', this.globalFilter);
     // Aquí puedes agregar lógica para filtrar la lista de usuarios en el frontend
@@ -56,7 +75,14 @@ export class UserListComponent implements OnInit {
     this.modalVisible = true;
 
     if (mode === 'Editar' && user) {
-      this.userForm.patchValue(user);
+      this.userForm.patchValue({
+        _id: user._id,
+        nombre: user.nombre,
+        apellido: user.apellido,
+        email: user.email,
+        password: user.password,
+        rol_id: user.rol_id
+      })
     } else {
       this.userForm.reset();
     }

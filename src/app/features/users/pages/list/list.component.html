@@ -67,8 +67,15 @@
             <input pInputText id="passwordInput" formControlName="password" />
           </div>
           <div class="p-field">
-            <label for="role">Rol</label>
-            <p-dropdown id="role" [options]="roles" formControlName="role" optionLabel="label" placeholder="Selecciona un rol"></p-dropdown>
+            <label for="rol_id">Rol</label>
+            <p-dropdown
+              id="rol_id"
+              [options]="selected_rol"
+              formControlName="rol_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona un rol">
+            </p-dropdown>
           </div>
         </div>
 

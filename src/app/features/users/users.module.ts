@@ -21,7 +21,7 @@ import { FormComponent } from './pages/form/form.component';
 
 // Servicios
 import { UserService } from './services/user.service';
-
+import { RolService } from '../rols/services/rol.service';
 @NgModule({
   declarations: [
     UserListComponent,
@@ -42,7 +42,8 @@ import { UserService } from './services/user.service';
   ],
   providers: [
     MessageService,
-    UserService
+    UserService,
+    RolService
   ],
   exports: [
     UserListComponent,

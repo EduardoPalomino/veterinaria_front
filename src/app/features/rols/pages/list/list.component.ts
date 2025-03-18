@@ -1,9 +1,8 @@
-import { Component, OnInit} from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RolService } from '../../services/rol.service';
 import { Rol } from '../../interfaces/rol.interface';
-
 
 @Component({
   selector: 'app-rol-list',
@@ -20,10 +19,10 @@ export class RolListComponent implements OnInit {
   mode:string='';
 
   constructor(
-    private fb: FormBuilder,
-    private rolService: RolService,
-    private confirmationService: ConfirmationService,
-    private messageService: MessageService
+  private fb: FormBuilder,
+  private rolService: RolService,
+  private confirmationService: ConfirmationService,
+  private messageService: MessageService
   ) {
     this.rolForm = this.fb.group({
       _id: [null],
@@ -45,7 +44,6 @@ export class RolListComponent implements OnInit {
         console.error('Error al cargar Rols:', err);
       }
     });
-
   }
 
   applyGlobalFilter() {
@@ -53,7 +51,6 @@ export class RolListComponent implements OnInit {
     console.log('Filtrando:', filterValue);
 
     if (!filterValue) {
-      //this.filteredRols = this.rols; // Si no hay filtro, mostrar todos
       this.filteredRols = [...this.rols];
       return;
     }
@@ -72,30 +69,11 @@ export class RolListComponent implements OnInit {
     console.log(mode);
     this.modalTitle = `${mode} Rol`;
     this.modalVisible = true;
+
     if (mode === 'Editar' && rol) {
       this.rolForm.patchValue(rol);
     } else {
       this.rolForm.reset();
-    }
-  }
-
-  saveRol() {
-    if (this.rolForm.valid) {
-      const rol = this.rolForm.value;
-
-      if (rol._id) {
-        // Editar Rol en el backend
-        this.rolService.update(rol._id, rol).subscribe(() => {
-          this.loadRols(); // Recargar lista después de editar
-        });
-      } else {
-        // Crear Rol en el backend
-        this.rolService.create(rol).subscribe(() => {
-          this.loadRols(); // Recargar lista después de crear
-        });
-      }
-
-      this.modalVisible = false;
     }
   }
 
@@ -112,20 +90,8 @@ export class RolListComponent implements OnInit {
       }
     });
   }
-  /*deleteRol(rol: Rol) {
-    this.rolService.delete(rol._id).subscribe({
-      next: () => {
-        this.loadRols();
-        this.messageService.add({ severity: 'success', summary: 'Éxito', detail: 'Rol eliminado correctamente' });
-      },
-      error: (err) => {
-        console.error('Error al eliminar el rol:', err);
-        this.messageService.add({ severity: 'error', summary: 'Error', detail: 'No se pudo eliminar el rol' });
-      }
-    });
-  }*/
 
-  deleteRol(rol: Rol) {
+deleteRol(rol: Rol) {
     this.rolService.delete(rol._id).subscribe({
       next: () => {
         this.loadRols();
@@ -160,7 +126,7 @@ export class RolListComponent implements OnInit {
             console.log('Rol guardado con éxito:', data);
             this.rols.push(data); // Agregar el nuevo rol a la lista
             this.modalVisible = false; // Cerrar modal después de guardar
-            this.loadRols(); // Recargar lista de roles
+            this.loadRols(); // Recargar lista de rols
           },
           error: (err) => {
             console.error('Error al guardar el rol:', err);

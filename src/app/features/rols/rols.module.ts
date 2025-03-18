@@ -40,7 +40,6 @@ import { RolService } from './services/rol.service';
     DropdownModule,
     ToastModule,
     ConfirmDialogModule
-
   ],
   providers: [
     MessageService,

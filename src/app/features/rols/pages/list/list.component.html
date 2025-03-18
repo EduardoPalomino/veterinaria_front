@@ -46,15 +46,14 @@
     <!-- Confirmation -->
     <p-confirmDialog></p-confirmDialog>
     <!-- Confirmation -->
-
     <!-- Modal -->
     <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="rolForm" (ngSubmit)="saveRol()">
+      <form [formGroup]="rolForm" >
         <div class="p-fluid">
            <div class="p-field">
             <label for="descripcionInput">Descripcion</label>
             <input pInputText id="descripcionInput" formControlName="descripcion" />
-             <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+            <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
           </div>
         </div>
         <div class="p-dialog-footer">

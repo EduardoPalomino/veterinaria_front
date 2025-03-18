@@ -1,3 +1,6 @@
+import {Rol} from "../app/features/rols/interfaces/rol.interface";
+import {RolService} from "../app/features/rols/services/rol.service";
+
 const fs = require('fs');
 const path = require('path');
 
@@ -111,11 +114,11 @@ export class ${className}Service {
   }
 
   update(id: string, data: ${interfaceName}): Observable<${interfaceName}> {
-    return this.http.put<${interfaceName}>(\`\${this.apiUrl}/\${id}\`, data);
+    return this.http.put<${interfaceName}>(\`\${this.apiUrl}/update/\${id}\`, data);
   }
 
   delete(id: string): Observable<void> {
-    return this.http.delete<void>(\`\${this.apiUrl}/\${id}\`);
+    return this.http.delete<void>(\`\${this.apiUrl}/delete/\${id}\`);
   }
 }`;
 }
@@ -156,8 +159,8 @@ import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
 
 // PrimeNG Services
-import { MessageService } from 'primeng/api';
-
+import { ConfirmDialogModule } from 'primeng/confirmdialog';
+import { MessageService, ConfirmationService } from 'primeng/api';
 // Componentes
 import { ${className}ListComponent } from './pages/list/list.component';
 import { FormComponent } from './pages/form/form.component';
@@ -181,10 +184,12 @@ import { ${className}Service } from './services/${name}.service';
     InputTextModule,
     DialogModule,
     DropdownModule,
-    ToastModule
+    ToastModule,
+    ConfirmDialogModule
   ],
   providers: [
     MessageService,
+    ConfirmationService,
     ${className}Service
   ],
   exports: [
@@ -200,14 +205,95 @@ function generateListsContent(name: string, fields: string[]): string {
   const className = capitalize(name);
   const formFields = fields.map((field) => `${field}: ['', Validators.required]`).join(',\n      ');
 
+  const importServiceFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `import { ${capitalize(cleanField)}Service } from '../../../${cleanField}s/services/${cleanField}.service';`;
+    })
+    .join(',\n      ');
+
+  const importInterfaceFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `import { ${capitalize(cleanField)} } from '../../../${cleanField}s/interfaces/${cleanField}.interface';`;
+    })
+    .join(',\n      ');
+
+  const arrayInterfaceFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `${cleanField}s: ${capitalize(cleanField)}[]= [];`;
+    })
+    .join(',\n      ');
+
+  const selectedFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `selected_${cleanField}:{ label: string; value: string }[]=[];`;
+    })
+    .join(',\n      ');
+
+  const constructorFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `,private ${cleanField}Service:${capitalize(cleanField)}Service`;
+    })
+    .join(',\n      ');
+
+  const onInitFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `this.load${capitalize(cleanField)}s();`;
+    })
+    .join(',\n      ');
+
+
+  const loadInitFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `load${capitalize(cleanField)}s() {
+    this.${cleanField}Service.getAll().subscribe({
+      next: (data) => {
+        this.${cleanField}s = data;
+        this.selected_${cleanField} = this.${cleanField}s.map(${cleanField} => ({
+          label: ${cleanField}.descripcion,
+          value: ${cleanField}._id
+        }));
+      },
+      error: (err) => {
+        console.error('Error al cargar ${cleanField}s:', err);
+      }
+    });
+  }`;
+    })
+    .join(',\n      ');
+
+
+  const editPatchFields = fields
+    .map(field => {
+      return `${field}: ${name}.${field}`;
+    })
+    .join(',\n      ');
+
   return `import { Component, OnInit } from '@angular/core';
+import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ${className}Service } from '../../services/${name}.service';
+${importServiceFields}
 import { ${className} } from '../../interfaces/${name}.interface';
+${importInterfaceFields}
 
 @Component({
   selector: 'app-${name}-list',
-  templateUrl: './list.component.html'
+  templateUrl: './list.component.html',
+  providers: [ConfirmationService, MessageService]
 })
 export class ${className}ListComponent implements OnInit {
   ${name}s: ${className}[] = [];
@@ -215,24 +301,33 @@ export class ${className}ListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
+  ${selectedFields}
   ${name}Form: FormGroup;
   mode:string='';
 
-  constructor(private fb: FormBuilder, private ${name}Service: ${className}Service) {
+  constructor(
+  private fb: FormBuilder,
+  private ${name}Service: ${className}Service,
+  private confirmationService: ConfirmationService,
+  private messageService: MessageService
+  ${constructorFields}
+  ) {
     this.${name}Form = this.fb.group({
-      id: [null],
+      _id: [null],
       ${formFields}
     });
   }
 
   ngOnInit(): void {
     this.load${className}s();
+    ${onInitFields}
   }
 
   load${className}s() {
     this.${name}Service.getAll().subscribe({
       next: (data) => {
         this.${name}s = data;
+        this.filtered${className}s = [...this.${name}s];
       },
       error: (err) => {
         console.error('Error al cargar ${className}s:', err);
@@ -245,7 +340,7 @@ export class ${className}ListComponent implements OnInit {
     console.log('Filtrando:', filterValue);
 
     if (!filterValue) {
-      this.filtered${className}s = this.${name}s; // Si no hay filtro, mostrar todos
+      this.filtered${className}s = [...this.${name}s];
       return;
     }
 
@@ -265,39 +360,79 @@ export class ${className}ListComponent implements OnInit {
     this.modalVisible = true;
 
     if (mode === 'Editar' && ${name}) {
-      this.${name}Form.patchValue(${name});
+      this.${name}Form.patchValue({
+      ${editPatchFields}
+      });
     } else {
       this.${name}Form.reset();
     }
   }
 
-  save${className}() {
-    if (this.${name}Form.valid) {
-      const ${name} = this.${name}Form.value;
+  confirmarEliminacion(${name}: ${className}) {
+    console.log("Clic en eliminar:", ${name});
+    this.confirmationService.confirm({
+      message: \`¿Estás seguro de eliminar el ${className}: \${${name}.descripcion}?\`,
+      header: 'Confirmación',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Sí',
+      rejectLabel: 'No',
+      accept: () => {
+        this.delete${className}(${name});
+      }
+    });
+  }
 
-      if (${name}.id) {
-        // Editar ${className} en el backend
-        this.${name}Service.update(${name}.id, ${name}).subscribe(() => {
-          this.load${className}s(); // Recargar lista después de editar
+delete${className}(${name}: ${className}) {
+    this.${name}Service.delete(${name}._id).subscribe({
+      next: () => {
+        this.load${className}s();
+        this.messageService.add({
+          severity: 'success',
+          summary: 'Éxito',
+          detail: \`${className} "\${${name}.descripcion}" eliminado correctamente\`
         });
-      } else {
-        // Crear ${className} en el backend
-        this.${name}Service.create(${name}).subscribe(() => {
-          this.load${className}s(); // Recargar lista después de crear
+      },
+      error: (err) => {
+        console.error('Error al eliminar el ${name}:', err);
+        this.messageService.add({
+          severity: 'error',
+          summary: 'Error',
+          detail: \`No se pudo eliminar el ${name} "\${${name}.descripcion}"\`
         });
       }
+    });
+  }
 
-      this.modalVisible = false;
+  saveRegistro() {
+    if (this.${name}Form.valid) { // Verifica que el formulario sea válido
+      const ${name} = this.${name}Form.value; // Obtener valores del formulario
+
+      console.log(JSON.stringify(${name}));
+      ${name}._id === null && delete ${name}._id;
+      console.log(JSON.stringify(${name}));
+
+      if (this.mode === 'Nuevo') {
+        this.${name}Service.create(${name}).subscribe({
+          next: (data) => {
+            console.log('${className} guardado con éxito:', data);
+            this.${name}s.push(data); // Agregar el nuevo ${name} a la lista
+            this.modalVisible = false; // Cerrar modal después de guardar
+            this.load${className}s(); // Recargar lista de ${name}s
+          },
+          error: (err) => {
+            console.error('Error al guardar el ${name}:', err);
+          }
+        });
+      }else{
+        this.${name}Service.update(${name}._id, ${name}).subscribe(() => {
+          this.modalVisible = false;
+          this.load${className}s();
+        });
+      }
     }
   }
 
-  delete${className}(${name}: ${className}) {
-    if (confirm(\`¿Seguro que quieres eliminar este ${className}?\`)) {
-      this.${name}Service.delete(${name}._id).subscribe(() => {
-        this.load${className}s(); // Recargar lista después de eliminar
-      });
-    }
-  }
+
 }
 `;
 }
@@ -315,10 +450,30 @@ function generateListsHtmlContent(name: string, fields: string[]): string {
     (field) => `<td>{{ ${name}.${field} }}</td>`
   ).join('\n          ');
 
+
+  const dropdownpComponentFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `<div class="p-field">
+            <label for="${cleanField}_id">${capitalize(cleanField)}</label>
+            <p-dropdown
+              id="${cleanField}_id"
+              [options]="selected_${cleanField}"
+              formControlName="${cleanField}_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Selecciona un ${cleanField}">
+            </p-dropdown>
+          </div>`;
+    })
+    .join('\n      ');
+
   const elemenRows = fields.map(
     (field) => `<div class="p-field">
             <label for="${field}Input">${capitalize(field)}</label>
             <input pInputText id="${field}Input" formControlName="${field}" />
+            <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
           </div>`
   ).join('\n          ');
 
@@ -362,20 +517,24 @@ function generateListsHtmlContent(name: string, fields: string[]): string {
           ${tableRows}
           <td>
             <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', ${name})"></button>
-            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="delete${className}(${name})"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(${name})"></button>
           </td>
         </tr>
       </ng-template>
     </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
     <!-- Modal -->
     <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="${name}Form" (ngSubmit)="save${className}()">
+      <form [formGroup]="${name}Form" >
         <div class="p-fluid">
            ${elemenRows}
+           ${dropdownpComponentFields}
         </div>
         <div class="p-dialog-footer">
           <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="submit" label="Guardar" class="p-button-text"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
         </div>
       </form>
     </p-dialog>

@@ -32,5 +32,4 @@ export class RolService {
   delete(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/delete/${id}`);
   }
-
 }
