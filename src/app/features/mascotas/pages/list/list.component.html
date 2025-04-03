@@ -1,0 +1,148 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Mascota</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Mascota"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredMascotas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['nombre','especie_id','raza_id','fecha_nacimiento','peso','sexo_id','cliente_id']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="especie_id">Especie_id <p-sortIcon field="especie_id"></p-sortIcon></th>
+          <th pSortableColumn="raza_id">Raza_id <p-sortIcon field="raza_id"></p-sortIcon></th>
+          <th pSortableColumn="fecha_nacimiento">Fecha_nacimiento <p-sortIcon field="fecha_nacimiento"></p-sortIcon></th>
+          <th pSortableColumn="peso">Peso <p-sortIcon field="peso"></p-sortIcon></th>
+          <th pSortableColumn="sexo_id">Sexo_id <p-sortIcon field="sexo_id"></p-sortIcon></th>
+          <th pSortableColumn="cliente_id">Cliente_id <p-sortIcon field="cliente_id"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-mascota let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ mascota.nombre }}</td>
+          <td>{{ mascota.especie_nombre }}</td>
+          <td>{{ mascota.raza_nombre }}</td>
+          <td>{{ mascota.fecha_nacimiento | date: 'YYYY-MM-dd'  }}</td>
+          <td>{{ mascota.peso }}</td>
+          <td>{{ mascota.sexo_nombre }}</td>
+          <td>{{ mascota.cliente_nombre }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', mascota)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(mascota)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="mascotaForm" >
+        <div class="p-fluid">
+
+    <div class="p-field">
+      <label>Nombre</label>
+
+        <input pInputText id="nombreInput" formControlName="nombre" />
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Fecha_nacimiento</label>
+
+        <p-calendar formControlName="fecha_nacimiento" dateFormat="mm/dd/yy" [showIcon]="true">
+        </p-calendar>
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Peso</label>
+
+        <input pInputText id="pesoInput" formControlName="peso" />
+
+    </div>
+
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           <div class="p-field">
+            <label for="especie_id">Especie</label>
+            <p-dropdown
+              id="especie_id"
+              [options]="selected_especie"
+              formControlName="especie_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeEspecie($event)"
+              placeholder="Selecciona un especie">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="raza_id">Raza</label>
+            <p-dropdown
+              id="raza_id"
+              [options]="selected_raza"
+              formControlName="raza_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeRaza($event)"
+              placeholder="Selecciona un raza">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="sexo_id">Sexo</label>
+            <p-dropdown
+              id="sexo_id"
+              [options]="selected_sexo"
+              formControlName="sexo_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeSexo($event)"
+              placeholder="Selecciona un sexo">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="cliente_id">Cliente</label>
+            <p-dropdown
+              id="cliente_id"
+              [options]="selected_cliente"
+              formControlName="cliente_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeCliente($event)"
+              placeholder="Selecciona un cliente">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

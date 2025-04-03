@@ -1,0 +1,146 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Proveedor</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Proveedor"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredProveedors" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['nombre','ruc','telefono','email','direccion','contacto','observaciones']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="ruc">Ruc <p-sortIcon field="ruc"></p-sortIcon></th>
+          <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="direccion">Direccion <p-sortIcon field="direccion"></p-sortIcon></th>
+          <th pSortableColumn="contacto">Contacto <p-sortIcon field="contacto"></p-sortIcon></th>
+          <th pSortableColumn="observaciones">Observaciones <p-sortIcon field="observaciones"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-proveedor let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ proveedor.nombre
+      
+      }}</td>
+          <td>{{ proveedor.ruc
+      
+      }}</td>
+          <td>{{ proveedor.telefono
+      
+      }}</td>
+          <td>{{ proveedor.email
+      
+      }}</td>
+          <td>{{ proveedor.direccion
+      
+      }}</td>
+          <td>{{ proveedor.contacto
+      
+      }}</td>
+          <td>{{ proveedor.observaciones
+      
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', proveedor)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(proveedor)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="proveedorForm" >
+        <div class="p-fluid">
+           
+    <div class="p-field">
+      <label>Nombre</label>
+      
+        <input pInputText id="nombreInput" formControlName="nombre" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Ruc</label>
+      
+        <input pInputText id="rucInput" formControlName="ruc" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Telefono</label>
+      
+        <input pInputText id="telefonoInput" formControlName="telefono" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Email</label>
+      
+        <input pInputText id="emailInput" formControlName="email" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Direccion</label>
+      
+        <input pInputText id="direccionInput" formControlName="direccion" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Contacto</label>
+      
+        <input pInputText id="contactoInput" formControlName="contacto" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Observaciones</label>
+      
+        <input pInputText id="observacionesInput" formControlName="observaciones" />
+      
+    </div>
+  
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

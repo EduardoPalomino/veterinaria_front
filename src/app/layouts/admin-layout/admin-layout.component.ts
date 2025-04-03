@@ -36,15 +36,26 @@ export class AdminLayoutComponent implements OnInit {
         label: 'Clientes',
         icon: 'pi pi-id-card',
         items: [
-          { label: 'Lista de Clientes', icon: 'pi pi-list', routerLink: '/admin/clientes/lista' },
+          { label: 'Lista de Clientes', icon: 'pi pi-list', routerLink: '/admin/clientes' },
           { label: 'Nuevo Cliente', icon: 'pi pi-plus', routerLink: '/admin/clientes/nuevo' }
+        ]
+      },
+      {
+        label: 'Mascotas',
+        icon: 'pi pi-github',
+        items: [
+          { label: 'Especie de Mascotas', icon: 'pi pi-list', routerLink: '/admin/especies' },
+          { label: 'Razas de Mascotas', icon: 'pi pi-list', routerLink: '/admin/razas' },
+          { label: 'Lista de Mascotas', icon: 'pi pi-list', routerLink: '/admin/mascotas' },
+          { label: 'Nuevo Mascota', icon: 'pi pi-plus', routerLink: '/admin/mascotas/nuevo' }
         ]
       },
       {
         label: 'Ventas',
         icon: 'pi pi-shopping-cart',
         items: [
-          { label: 'Registrar Venta', icon: 'pi pi-plus', routerLink: '/admin/ventas/nueva' },
+          { label: 'Registrar Venta', icon: 'pi pi-plus', routerLink: '/admin/ventas' },
+          { label: 'Detalle Venta', icon: 'pi pi-plus', routerLink: '/admin/detalle_ventas' },
           { label: 'Historial de Ventas', icon: 'pi pi-clock', routerLink: '/admin/ventas/historial' }
         ]
       },
@@ -52,7 +63,8 @@ export class AdminLayoutComponent implements OnInit {
         label: 'Productos',
         icon: 'pi pi-box',
         items: [
-          { label: 'Lista de Productos', icon: 'pi pi-list', routerLink: '/admin/productos/lista' },
+          { label: 'Categoría de Productos', icon: 'pi pi-list', routerLink: '/admin/categoria_productos' },
+          { label: 'Lista de Productos', icon: 'pi pi-list', routerLink: '/admin/productos' },
           { label: 'Categorías', icon: 'pi pi-tags', routerLink: '/admin/productos/categorias' }
         ]
       },
@@ -60,7 +72,7 @@ export class AdminLayoutComponent implements OnInit {
         label: 'Compras',
         icon: 'pi pi-shopping-bag',
         items: [
-          { label: 'Registrar Compra', icon: 'pi pi-plus', routerLink: '/admin/compras/nueva' },
+          { label: 'Registrar Compra', icon: 'pi pi-plus', routerLink: '/admin/compras' },
           { label: 'Historial de Compras', icon: 'pi pi-clock', routerLink: '/admin/compras/historial' }
         ]
       },
@@ -68,7 +80,7 @@ export class AdminLayoutComponent implements OnInit {
         label: 'Proveedores',
         icon: 'pi pi-truck',
         items: [
-          { label: 'Lista de Proveedores', icon: 'pi pi-list', routerLink: '/admin/proveedores/lista' },
+          { label: 'Lista de Proveedores', icon: 'pi pi-list', routerLink: '/admin/proveedors' },
           { label: 'Nuevo Proveedor', icon: 'pi pi-plus', routerLink: '/admin/proveedores/nuevo' }
         ]
       },
@@ -76,9 +88,9 @@ export class AdminLayoutComponent implements OnInit {
         label: 'Reportes',
         icon: 'pi pi-chart-line',
         items: [
-          { label: 'Reporte de Ventas', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes/ventas' },
-          { label: 'Reporte de Compras', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes/compras' },
-          { label: 'Reporte de Inventario', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes/inventario' }
+          { label: 'Reporte de Ventas', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes' },
+          { label: 'Reporte de Compras', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes' },
+          { label: 'Reporte de Inventario', icon: 'pi pi-chart-bar', routerLink: '/admin/reportes' }
         ]
       },
       { label: 'Configuración', icon: 'pi pi-cog', routerLink: '/admin/configuracion' }

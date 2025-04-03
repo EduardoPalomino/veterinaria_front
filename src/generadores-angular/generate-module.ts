@@ -1,6 +1,3 @@
-import {Rol} from "../app/features/rols/interfaces/rol.interface";
-import {RolService} from "../app/features/rols/services/rol.service";
-
 const fs = require('fs');
 const path = require('path');
 
@@ -157,6 +154,7 @@ import { InputTextModule } from 'primeng/inputtext';
 import { DropdownModule } from 'primeng/dropdown';
 import { ToastModule } from 'primeng/toast';
 import { DialogModule } from 'primeng/dialog';
+import { CalendarModule } from 'primeng/calendar';
 
 // PrimeNG Services
 import { ConfirmDialogModule } from 'primeng/confirmdialog';
@@ -185,7 +183,8 @@ import { ${className}Service } from './services/${name}.service';
     DialogModule,
     DropdownModule,
     ToastModule,
-    ConfirmDialogModule
+    ConfirmDialogModule,
+    CalendarModule
   ],
   providers: [
     MessageService,
@@ -211,7 +210,7 @@ function generateListsContent(name: string, fields: string[]): string {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
       return `import { ${capitalize(cleanField)}Service } from '../../../${cleanField}s/services/${cleanField}.service';`;
     })
-    .join(',\n      ');
+    .join('\n');
 
   const importInterfaceFields = fields
     .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
@@ -219,7 +218,7 @@ function generateListsContent(name: string, fields: string[]): string {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
       return `import { ${capitalize(cleanField)} } from '../../../${cleanField}s/interfaces/${cleanField}.interface';`;
     })
-    .join(',\n      ');
+    .join('\n');
 
   const arrayInterfaceFields = fields
     .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
@@ -227,7 +226,7 @@ function generateListsContent(name: string, fields: string[]): string {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
       return `${cleanField}s: ${capitalize(cleanField)}[]= [];`;
     })
-    .join(',\n      ');
+    .join('\n');
 
   const selectedFields = fields
     .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
@@ -235,15 +234,15 @@ function generateListsContent(name: string, fields: string[]): string {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
       return `selected_${cleanField}:{ label: string; value: string }[]=[];`;
     })
-    .join(',\n      ');
+    .join('\n');
 
   const constructorFields = fields
     .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
     .map(field => {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
-      return `,private ${cleanField}Service:${capitalize(cleanField)}Service`;
+      return `private ${cleanField}Service:${capitalize(cleanField)}Service`;
     })
-    .join(',\n      ');
+    .join(',\n');
 
   const onInitFields = fields
     .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
@@ -251,7 +250,20 @@ function generateListsContent(name: string, fields: string[]): string {
       const cleanField = field.replace('_id', ''); // Elimina el "_id"
       return `this.load${capitalize(cleanField)}s();`;
     })
-    .join(',\n      ');
+    .join('\n');
+
+  const onChangeFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `onChange${capitalize(cleanField)}(e: any) {
+        this.${name}Form.patchValue({${cleanField}_id:e.value});
+       } `;
+    })
+    .join('\n      ');
+
+
+
 
 
   const loadInitFields = fields
@@ -273,7 +285,9 @@ function generateListsContent(name: string, fields: string[]): string {
     });
   }`;
     })
-    .join(',\n      ');
+    .join('\n      ');
+
+
 
 
   const editPatchFields = fields
@@ -281,6 +295,27 @@ function generateListsContent(name: string, fields: string[]): string {
       return `${field}: ${name}.${field}`;
     })
     .join(',\n      ');
+
+  const maskColumFields = fields
+    .filter(field => field.endsWith('_id')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      const cleanField = field.replace('_id', ''); // Elimina el "_id"
+      return `${cleanField}_nombre:this.${cleanField}s.find(${cleanField}=>${cleanField}._id==${name}.${cleanField}_id)?.descripcion||'Sin ${capitalize(cleanField)}'`;
+    })
+    .join('\n      ');
+
+  const selectedCalendarFields = fields
+    .filter(field => field.startsWith('fecha')) // Filtra solo los que terminan en "_id"
+    .map(field => {
+      return `selectedCalendar${capitalize(field)}(event: Date) {
+       const formattedDate = this.formatDate(event);
+       this.${name}Form.patchValue({
+           ${field}: formattedDate
+       });
+    }`;
+    })
+    .join('\n      ');
+
 
   return `import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
@@ -301,6 +336,7 @@ export class ${className}ListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
+  ${arrayInterfaceFields}
   ${selectedFields}
   ${name}Form: FormGroup;
   mode:string='';
@@ -319,14 +355,17 @@ export class ${className}ListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+     ${onInitFields}
     this.load${className}s();
-    ${onInitFields}
   }
 
   load${className}s() {
     this.${name}Service.getAll().subscribe({
       next: (data) => {
-        this.${name}s = data;
+        this.${name}s = data.map(${name}=>({
+          ...${name},
+          ${maskColumFields}
+        }));
         this.filtered${className}s = [...this.${name}s];
       },
       error: (err) => {
@@ -334,6 +373,8 @@ export class ${className}ListComponent implements OnInit {
       }
     });
   }
+
+${loadInitFields}
 
   applyGlobalFilter() {
     const filterValue = this.globalFilter.toLowerCase().trim();
@@ -361,6 +402,7 @@ export class ${className}ListComponent implements OnInit {
 
     if (mode === 'Editar' && ${name}) {
       this.${name}Form.patchValue({
+       _id: ${name}._id,
       ${editPatchFields}
       });
     } else {
@@ -371,7 +413,7 @@ export class ${className}ListComponent implements OnInit {
   confirmarEliminacion(${name}: ${className}) {
     console.log("Clic en eliminar:", ${name});
     this.confirmationService.confirm({
-      message: \`¿Estás seguro de eliminar el ${className}: \${${name}.descripcion}?\`,
+      message: \`¿Estás seguro de eliminar el ${className}: \${${name}.${fields[0]}}?\`,
       header: 'Confirmación',
       icon: 'pi pi-exclamation-triangle',
       acceptLabel: 'Sí',
@@ -389,7 +431,7 @@ delete${className}(${name}: ${className}) {
         this.messageService.add({
           severity: 'success',
           summary: 'Éxito',
-          detail: \`${className} "\${${name}.descripcion}" eliminado correctamente\`
+          detail: \`${className} "\${${name}.${fields[0]}}" eliminado correctamente\`
         });
       },
       error: (err) => {
@@ -397,7 +439,7 @@ delete${className}(${name}: ${className}) {
         this.messageService.add({
           severity: 'error',
           summary: 'Error',
-          detail: \`No se pudo eliminar el ${name} "\${${name}.descripcion}"\`
+          detail: \`No se pudo eliminar el ${name} "\${${name}.${fields[0]}}"\`
         });
       }
     });
@@ -418,6 +460,7 @@ delete${className}(${name}: ${className}) {
             this.${name}s.push(data); // Agregar el nuevo ${name} a la lista
             this.modalVisible = false; // Cerrar modal después de guardar
             this.load${className}s(); // Recargar lista de ${name}s
+            this.mensajeConfirmacion(${name},"Registro Actualizado");
           },
           error: (err) => {
             console.error('Error al guardar el ${name}:', err);
@@ -427,10 +470,22 @@ delete${className}(${name}: ${className}) {
         this.${name}Service.update(${name}._id, ${name}).subscribe(() => {
           this.modalVisible = false;
           this.load${className}s();
+          this.mensajeConfirmacion(${name},"Registro Actualizado");
         });
       }
     }
   }
+
+  ${onChangeFields}
+
+  mensajeConfirmacion(${name}: ${className},mensaje:String){
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: \` ${className} "\${${name}.${fields[0]}}" \${mensaje}\`
+    });
+  }
+
 
 
 }
@@ -447,7 +502,9 @@ function generateListsHtmlContent(name: string, fields: string[]): string {
   ).join('\n          ');
 
   const tableRows = fields.map(
-    (field) => `<td>{{ ${name}.${field} }}</td>`
+    (field) => `<td>{{ ${name}.${field.replace('_id', '_nombre')}
+      ${field.includes('fecha') ? `| date: 'yyyy-MM-dd' ` : ``}
+      }}</td>`
   ).join('\n          ');
 
 
@@ -463,19 +520,30 @@ function generateListsHtmlContent(name: string, fields: string[]): string {
               formControlName="${cleanField}_id"
               optionLabel="label"
               optionValue="value"
+              (onChange)="onChange${capitalize(cleanField)}($event)"
               placeholder="Selecciona un ${cleanField}">
             </p-dropdown>
           </div>`;
     })
     .join('\n      ');
 
-  const elemenRows = fields.map(
-    (field) => `<div class="p-field">
-            <label for="${field}Input">${capitalize(field)}</label>
-            <input pInputText id="${field}Input" formControlName="${field}" />
-            <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-          </div>`
-  ).join('\n          ');
+  const elemenRowsHtml = fields
+    .filter(field => !field.endsWith('_id'))
+    .map((field) => `
+    <div class="p-field">
+      <label>${capitalize(field)}</label>
+      ${field.includes('fecha') ? `
+        <p-calendar formControlName="${field}" dateFormat="mm/dd/yy" [showIcon]="true">
+        </p-calendar>
+      ` : `
+        <input pInputText id="${field}Input" formControlName="${field}" />
+      `}
+    </div>
+  `).join('\n');
+
+  // Agregar el input oculto solo una vez
+  const elemenRows = `${elemenRowsHtml}
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />`;
 
   return `<p-card>
   <ng-template pTemplate="title">Lista de ${className}</ng-template>

@@ -1,0 +1,104 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Cliente</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Cliente"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredClientes" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['nombres','apellidos','dni','telefono','direccion','email','indicacion_general']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="nombres">Nombres <p-sortIcon field="nombres"></p-sortIcon></th>
+          <th pSortableColumn="apellidos">Apellidos <p-sortIcon field="apellidos"></p-sortIcon></th>
+          <th pSortableColumn="dni">Dni <p-sortIcon field="dni"></p-sortIcon></th>
+          <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
+          <th pSortableColumn="direccion">Direccion <p-sortIcon field="direccion"></p-sortIcon></th>
+          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+          <th pSortableColumn="indicacion_general">Indicacion_general <p-sortIcon field="indicacion_general"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-cliente let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ cliente.nombres }}</td>
+          <td>{{ cliente.apellidos }}</td>
+          <td>{{ cliente.dni }}</td>
+          <td>{{ cliente.telefono }}</td>
+          <td>{{ cliente.direccion }}</td>
+          <td>{{ cliente.email }}</td>
+          <td>{{ cliente.indicacion_general }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', cliente)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(cliente)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="clienteForm" >
+        <div class="p-fluid">
+           <div class="p-field">
+            <label for="nombresInput">Nombres</label>
+            <input pInputText id="nombresInput" formControlName="nombres" />
+          </div>
+          <div class="p-field">
+            <label for="apellidosInput">Apellidos</label>
+            <input pInputText id="apellidosInput" formControlName="apellidos" />
+          </div>
+          <div class="p-field">
+            <label for="dniInput">Dni</label>
+            <input pInputText id="dniInput" formControlName="dni" />
+          </div>
+          <div class="p-field">
+            <label for="telefonoInput">Telefono</label>
+            <input pInputText id="telefonoInput" formControlName="telefono" />
+          </div>
+          <div class="p-field">
+            <label for="direccionInput">Direccion</label>
+            <input pInputText id="direccionInput" formControlName="direccion" />
+          </div>
+          <div class="p-field">
+            <label for="emailInput">Email</label>
+            <input pInputText id="emailInput" formControlName="email" />
+          </div>
+          <div class="p-field">
+            <label for="indicacion_generalInput">Indicacion_general</label>
+            <input pInputText id="indicacion_generalInput" formControlName="indicacion_general" />
+          </div>
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

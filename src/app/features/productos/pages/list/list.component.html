@@ -1,0 +1,153 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Producto</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Producto"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredProductos" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['nombre','categoria_producto_id','tamano','precio_venta','stock','descripcion','proveedor_id']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="categoria_producto_id">Tipo de servicio <p-sortIcon field="categoria_producto_id"></p-sortIcon></th>
+          <th pSortableColumn="tamano">Tamano <p-sortIcon field="tamano"></p-sortIcon></th>
+          <th pSortableColumn="precio_venta">Precio_venta <p-sortIcon field="precio_venta"></p-sortIcon></th>
+          <th pSortableColumn="stock">Stock <p-sortIcon field="stock"></p-sortIcon></th>
+          <th pSortableColumn="descripcion">Descripcion <p-sortIcon field="descripcion"></p-sortIcon></th>
+          <th pSortableColumn="proveedor_id">Proveedor_id <p-sortIcon field="proveedor_id"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-producto let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ producto.nombre
+
+      }}</td>
+          <td>{{ producto.categoria_producto_nombre
+
+      }}</td>
+          <td>{{ producto.tamano
+
+      }}</td>
+          <td>{{ producto.precio_venta
+
+      }}</td>
+          <td>{{ producto.stock
+
+      }}</td>
+          <td>{{ producto.descripcion
+
+      }}</td>
+          <td>{{ producto.proveedor_nombre
+
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', producto)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(producto)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="productoForm" >
+        <div class="p-fluid">
+
+    <div class="p-field">
+      <label>Nombre</label>
+
+        <input pInputText id="nombreInput" formControlName="nombre" />
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Tamano</label>
+
+        <input pInputText id="tamanoInput" formControlName="tamano" />
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Precio_venta</label>
+
+        <input pInputText id="precio_ventaInput" formControlName="precio_venta" />
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Stock</label>
+
+        <input pInputText id="stockInput" formControlName="stock" />
+
+    </div>
+
+
+    <div class="p-field">
+      <label>Descripcion</label>
+
+        <input pInputText id="descripcionInput" formControlName="descripcion" />
+
+    </div>
+
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           <div class="p-field">
+            <label for="categoria_producto_id">Categoria_producto</label>
+            <p-dropdown
+              id="categoria_producto_id"
+              [options]="selected_categoria_producto"
+              formControlName="categoria_producto_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeCategoria_producto($event)"
+              placeholder="Selecciona un categoria_producto">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="proveedor_id">Proveedor</label>
+            <p-dropdown
+              id="proveedor_id"
+              [options]="selected_proveedor"
+              formControlName="proveedor_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProveedor($event)"
+              placeholder="Selecciona un proveedor">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

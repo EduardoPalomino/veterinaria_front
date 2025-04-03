@@ -1,0 +1,117 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Detalle_venta</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Detalle_venta"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredDetalle_ventas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['venta_id','producto_id','cantidad','precio_venta']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="venta_id">Venta_id <p-sortIcon field="venta_id"></p-sortIcon></th>
+          <th pSortableColumn="producto_id">Producto_id <p-sortIcon field="producto_id"></p-sortIcon></th>
+          <th pSortableColumn="cantidad">Cantidad <p-sortIcon field="cantidad"></p-sortIcon></th>
+          <th pSortableColumn="precio_venta">Precio_venta <p-sortIcon field="precio_venta"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-detalle_venta let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ detalle_venta.venta_nombre
+      
+      }}</td>
+          <td>{{ detalle_venta.producto_nombre
+      
+      }}</td>
+          <td>{{ detalle_venta.cantidad
+      
+      }}</td>
+          <td>{{ detalle_venta.precio_venta
+      
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', detalle_venta)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(detalle_venta)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="detalle_ventaForm" >
+        <div class="p-fluid">
+           
+    <div class="p-field">
+      <label>Cantidad</label>
+      
+        <input pInputText id="cantidadInput" formControlName="cantidad" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Precio_venta</label>
+      
+        <input pInputText id="precio_ventaInput" formControlName="precio_venta" />
+      
+    </div>
+  
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           <div class="p-field">
+            <label for="venta_id">Venta</label>
+            <p-dropdown
+              id="venta_id"
+              [options]="selected_venta"
+              formControlName="venta_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeVenta($event)"
+              placeholder="Selecciona un venta">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="producto_id">Producto</label>
+            <p-dropdown
+              id="producto_id"
+              [options]="selected_producto"
+              formControlName="producto_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProducto($event)"
+              placeholder="Selecciona un producto">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

@@ -19,8 +19,25 @@ import { FormsModule } from '@angular/forms';
 
 // Importa el nuevo LayoutsModule
 import { LayoutsModule } from './layouts/layouts.module';
-import { UsersModule } from './features/users/users.module';
+import { UsuariosModule } from './features/usuarios/usuarios.module';
 import { RolsModule } from './features/rols/rols.module';
+import { ClientesModule } from './features/clientes/clientes.module';
+import { SexosModule } from './features/sexos/sexos.module';
+import { EspeciesModule } from './features/especies/especies.module';
+import { RazasModule } from './features/razas/razas.module';
+import { MascotasModule } from './features/mascotas/mascotas.module';
+
+import { ProveedorsModule } from './features/proveedors/proveedors.module';
+import { Categoria_productosModule } from './features/categoria_productos/categoria_productos.module';
+import { ProductosModule } from './features/productos/productos.module';
+import { ComprasModule } from './features/compras/compras.module';
+import { Detalle_comprasModule } from './features/detalle_compras/detalle_compras.module';
+import { VentasModule } from './features/ventas/ventas.module';
+import { Detalle_ventasModule } from './features/detalle_ventas/detalle_ventas.module';
+import { Historia_clinicasModule } from './features/historia_clinicas/historia_clinicas.module';
+import { ReportesModule } from './features/reportes/reportes.module';
+
+import {UsuarioListComponent} from "./features/usuarios/pages/list/list.component";
 @NgModule({
   declarations: [
     AppComponent
@@ -30,8 +47,22 @@ import { RolsModule } from './features/rols/rols.module';
     BrowserAnimationsModule,
     AppRoutingModule,
     LayoutsModule,
-    UsersModule,
+    UsuariosModule,
     RolsModule,
+    ClientesModule,
+    EspeciesModule,
+    RazasModule,
+    MascotasModule,
+    SexosModule,
+    ProveedorsModule,
+    Categoria_productosModule,
+    ProductosModule,
+    ComprasModule,
+    Detalle_comprasModule,
+    VentasModule,
+    Detalle_ventasModule,
+    Historia_clinicasModule,
+    ReportesModule,
     CalendarModule,
     TableModule,
     CardModule,

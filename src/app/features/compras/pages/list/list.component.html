@@ -1,0 +1,130 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Compra</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Compra"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredCompras" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['fecha','total','proveedor_id','usuario_id']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
+          <th pSortableColumn="total">Total <p-sortIcon field="total"></p-sortIcon></th>
+          <th pSortableColumn="proveedor_id">Proveedor_id <p-sortIcon field="proveedor_id"></p-sortIcon></th>
+          <th pSortableColumn="usuario_id">Usuario_id <p-sortIcon field="usuario_id"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-compra let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ compra.fecha
+      | date: 'dd/MM/yyyy'
+      }}</td>
+          <td>{{ compra.total
+
+      }}</td>
+          <td>{{ compra.proveedor_nombre
+
+      }}</td>
+          <td>{{ compra.usuario_nombre
+
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', compra)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(compra)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="compraForm" >
+        <div class="p-fluid">
+          <div class="p-field">
+            <label for="producto_id">Producto</label>
+            <p-dropdown
+              id="producto_id"
+              [options]="selected_producto"
+              formControlName="producto_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProducto($event)"
+              placeholder="Selecciona un producto">
+            </p-dropdown>
+          </div>
+          <div class="p-field">
+            <label>Cantidad</label>
+              <p-inputNumber id="cantidadInput" formControlName="cantidad" mode="decimal" [step]="1" (input)="calcularTotal()"></p-inputNumber>
+          </div>
+          <div class="p-field">
+            <label>Precio Unitario</label>
+            <input pInputText id="precioInput" formControlName="precio" (input)="calcularTotal()"  />
+          </div>
+          <div class="p-field">
+            <label>Total Pagar</label>
+              <input pInputText id="totalInput" formControlName="total" [disabled]="true"/>
+          </div>
+          <div class="p-field">
+            <label>Fecha</label>
+            <p-calendar formControlName="fecha" dateFormat="dd/mm/yy" [showIcon]="true">
+            </p-calendar>
+          </div>
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           <div class="p-field">
+            <label for="proveedor_id">Proveedor</label>
+            <p-dropdown
+              id="proveedor_id"
+              [options]="selected_proveedor"
+              formControlName="proveedor_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProveedor($event)"
+              placeholder="Selecciona un proveedor">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="usuario_id">Usuario</label>
+            <p-dropdown
+              id="usuario_id"
+              [options]="selected_usuario"
+              formControlName="usuario_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeUsuario($event)"
+              placeholder="Selecciona un usuario">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

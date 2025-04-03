@@ -1,0 +1,154 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Historia_clinica</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Historia_clinica"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredHistoria_clinicas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['mascota_id','fecha','motivo_consulta','diagnostico','tratamiento','observaciones','usuario_id']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="mascota_id">Mascota_id <p-sortIcon field="mascota_id"></p-sortIcon></th>
+          <th pSortableColumn="fecha">Fecha <p-sortIcon field="fecha"></p-sortIcon></th>
+          <th pSortableColumn="motivo_consulta">Motivo_consulta <p-sortIcon field="motivo_consulta"></p-sortIcon></th>
+          <th pSortableColumn="diagnostico">Diagnostico <p-sortIcon field="diagnostico"></p-sortIcon></th>
+          <th pSortableColumn="tratamiento">Tratamiento <p-sortIcon field="tratamiento"></p-sortIcon></th>
+          <th pSortableColumn="observaciones">Observaciones <p-sortIcon field="observaciones"></p-sortIcon></th>
+          <th pSortableColumn="usuario_id">Usuario_id <p-sortIcon field="usuario_id"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-historia_clinica let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ historia_clinica.mascota_nombre
+      
+      }}</td>
+          <td>{{ historia_clinica.fecha
+      | date: 'yyyy-MM-dd' 
+      }}</td>
+          <td>{{ historia_clinica.motivo_consulta
+      
+      }}</td>
+          <td>{{ historia_clinica.diagnostico
+      
+      }}</td>
+          <td>{{ historia_clinica.tratamiento
+      
+      }}</td>
+          <td>{{ historia_clinica.observaciones
+      
+      }}</td>
+          <td>{{ historia_clinica.usuario_nombre
+      
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', historia_clinica)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(historia_clinica)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="historia_clinicaForm" >
+        <div class="p-fluid">
+           
+    <div class="p-field">
+      <label>Fecha</label>
+      
+        <p-calendar formControlName="fecha" dateFormat="mm/dd/yy" [showIcon]="true">
+        </p-calendar>
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Motivo_consulta</label>
+      
+        <input pInputText id="motivo_consultaInput" formControlName="motivo_consulta" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Diagnostico</label>
+      
+        <input pInputText id="diagnosticoInput" formControlName="diagnostico" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Tratamiento</label>
+      
+        <input pInputText id="tratamientoInput" formControlName="tratamiento" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Observaciones</label>
+      
+        <input pInputText id="observacionesInput" formControlName="observaciones" />
+      
+    </div>
+  
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           <div class="p-field">
+            <label for="mascota_id">Mascota</label>
+            <p-dropdown
+              id="mascota_id"
+              [options]="selected_mascota"
+              formControlName="mascota_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeMascota($event)"
+              placeholder="Selecciona un mascota">
+            </p-dropdown>
+          </div>
+      <div class="p-field">
+            <label for="usuario_id">Usuario</label>
+            <p-dropdown
+              id="usuario_id"
+              [options]="selected_usuario"
+              formControlName="usuario_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeUsuario($event)"
+              placeholder="Selecciona un usuario">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

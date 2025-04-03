@@ -932,3 +932,13 @@ label {
   border-bottom-right-radius: 3px;
   border-bottom-left-radius: 3px;
 }
+/* Estilo general del p-calendar */
+p-calendar .p-button{
+  padding:0;
+  background:#f1f5f9;
+  border: 1px #f1f5f9;
+}
+p-calendar .p-icon-wrapper {
+  display: inline-flex;
+  color: #727e8d;
+}

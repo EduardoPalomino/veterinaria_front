@@ -2,7 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { ConfirmationService, MessageService } from 'primeng/api';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { RolService } from '../../services/rol.service';
+
 import { Rol } from '../../interfaces/rol.interface';
+
 
 @Component({
   selector: 'app-rol-list',
@@ -15,6 +17,8 @@ export class RolListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
+  
+  
   rolForm: FormGroup;
   mode:string='';
 
@@ -23,6 +27,7 @@ export class RolListComponent implements OnInit {
   private rolService: RolService,
   private confirmationService: ConfirmationService,
   private messageService: MessageService
+  
   ) {
     this.rolForm = this.fb.group({
       _id: [null],
@@ -31,13 +36,17 @@ export class RolListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+     
     this.loadRols();
   }
 
   loadRols() {
     this.rolService.getAll().subscribe({
       next: (data) => {
-        this.rols = data;
+        this.rols = data.map(rol=>({
+          ...rol,
+          
+        }));
         this.filteredRols = [...this.rols];
       },
       error: (err) => {
@@ -45,6 +54,8 @@ export class RolListComponent implements OnInit {
       }
     });
   }
+
+
 
   applyGlobalFilter() {
     const filterValue = this.globalFilter.toLowerCase().trim();
@@ -71,7 +82,10 @@ export class RolListComponent implements OnInit {
     this.modalVisible = true;
 
     if (mode === 'Editar' && rol) {
-      this.rolForm.patchValue(rol);
+      this.rolForm.patchValue({
+       _id: rol._id,
+      descripcion: rol.descripcion
+      });
     } else {
       this.rolForm.reset();
     }
@@ -127,6 +141,7 @@ deleteRol(rol: Rol) {
             this.rols.push(data); // Agregar el nuevo rol a la lista
             this.modalVisible = false; // Cerrar modal después de guardar
             this.loadRols(); // Recargar lista de rols
+            this.mensajeConfirmacion(rol,"Registro Actualizado");
           },
           error: (err) => {
             console.error('Error al guardar el rol:', err);
@@ -136,10 +151,20 @@ deleteRol(rol: Rol) {
         this.rolService.update(rol._id, rol).subscribe(() => {
           this.modalVisible = false;
           this.loadRols();
+          this.mensajeConfirmacion(rol,"Registro Actualizado");
         });
       }
     }
   }
 
+  
+
+  mensajeConfirmacion(rol: Rol,mensaje:String){
+    this.messageService.add({
+      severity: 'success',
+      summary: 'Éxito',
+      detail: ` Rol "${rol.descripcion}" ${mensaje}`
+    });
+  }
 
 }
