@@ -347,7 +347,6 @@ export class CompraListComponent implements OnInit {
       if (this.compraForm.valid) { // Verifica que el formulario sea válido
         const compra = this.compraForm.value; // Obtener valores del formulario
         //console.log('saveRegistro:this._id_detalle_compra ', this._id_detalle_compra);
-
         this.saveCompra(compra);
       }
   }
@@ -394,7 +393,6 @@ export class CompraListComponent implements OnInit {
     });
   }
   actualizaStockProducto(producto:Producto){
-
     this.productoService.update(producto._id,producto).subscribe({
       next: (data:any) => {
         console.log('Stock de producto:'+data.nombre+' Nuevo Stock es:'+data.stock);
@@ -404,7 +402,7 @@ export class CompraListComponent implements OnInit {
       }
     });
   }
-   productoUpdateStock(producto_id: string, cantidad: string) {
+  productoUpdateStock(producto_id: string, cantidad: string) {
      this.calculateNewProductStock(producto_id, cantidad);
   }
 

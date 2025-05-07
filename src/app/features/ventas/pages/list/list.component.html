@@ -102,7 +102,7 @@
           </div>
           <div class="p-field">
             <label>Precio_venta</label>
-            <input pInputText id="precio_ventaInput" formControlName="precio_venta" />
+            <input pInputText id="precio_ventaInput" formControlName="precio" (input)="calcularTotal()"/>
           </div>
           <div class="p-field">
             <label>Total</label>
@@ -110,7 +110,7 @@
           </div>
           <div class="p-field">
             <label>Fecha</label>
-            <p-calendar formControlName="fecha" dateFormat="mm/dd/yy" [showIcon]="true">
+            <p-calendar formControlName="fecha" dateFormat="dd/mm/yy" [showIcon]="true">
             </p-calendar>
           </div>
 
