@@ -21,26 +21,28 @@ import { FormComponent } from './pages/form/form.component';
 
 // Servicios
 import { RolService } from './services/rol.service';
+import {CalendarModule} from "primeng/calendar";
 
 @NgModule({
   declarations: [
     RolListComponent,
     FormComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    TableModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    DialogModule,
-    DropdownModule,
-    ToastModule,
-    ConfirmDialogModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        TableModule,
+        CardModule,
+        ButtonModule,
+        InputTextModule,
+        DialogModule,
+        DropdownModule,
+        ToastModule,
+        ConfirmDialogModule,
+        CalendarModule
+    ],
   providers: [
     MessageService,
     ConfirmationService,
