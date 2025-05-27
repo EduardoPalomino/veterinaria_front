@@ -1,66 +1,47 @@
 <p-card>
-  <div class="flex flex-column md:flex-row min-h-screen w-full">
+
+  <div class="flex grid">
+
     <!-- Sidebar - 20% en desktop, 100% en móvil -->
-    <div class="w-full md:w-20rem bg-gray-100 p-1" style="flex-shrink: 0;">
-      <!-- Titulo -->
-      <div class="bg-white p-4 text-center border-round shadow-2 font-bold">
-        <i class="pi pi-box mr-2"></i>INVENTARIO
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'REPORTES'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+          <moduleBoxLinks [title]="'REPORTES'"></moduleBoxLinks>
+        </div>
+        <div class="col-12">
+          <moduleBoxButton></moduleBoxButton>
+        </div>
+        <div class="col-12">
+          <!-- Crear Nuevo -->
+          <div class="flex flex-column align-items-center" style="gap: 8px;">
+            <!-- Botón circular grande con ícono "+" -->
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-rounded p-button-lg custom-circle-button"
+            ></button>
+
+            <!-- Label descriptivo -->
+            <span class="text-lg font-medium">Generar cliente</span>
+          </div>
+        </div>
       </div>
-      <!-- Botones -->
-      <button pButton type="button" label="Revisar Compras" class="p-button-outlined p-button-sm shadow-2" icon="pi pi-shopping-cart"></button>
-      <button pButton type="button" label="Revisar Ventas" class="p-button-outlined p-button-sm shadow-2" icon="pi pi-money-bill"></button>
     </div>
-    <!-- Main - 80% en desktop (espacio restante), 100% en móvil -->
-    <div class="w-full flex-1  overflow-auto" style="min-width: 0;">
-
-      <div class="w-full panel-menu bg-red-100">
-        <!-- Clientes -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-users"
-                label="Clientes"></button>
-
-        <!-- Productos -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-box"
-                label="Productos"></button>
-
-        <!-- Ventas -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-money-bill"
-                label="Ventas"></button>
-
-        <!-- Compras -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-shopping-cart"
-                label="Compras"></button>
-
-        <!-- Proveedores -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-truck"
-                label="Proveedores"></button>
-
-        <!-- Reportes -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-chart-bar"
-                label="Reportes"></button>
-
-        <!-- Tienda -->
-        <button pButton type="button"
-                class="p-button-outlined p-button-sm shadow-2 whitespace-nowrap"
-                icon="pi pi-shopping-bag"
-                label="TIENDA"></button>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
       </div>
-
-      <div class="panel-filtro bg-blue-100 p-2 sm:p-3 md:p-4">
-        <div class="grid gap-2 sm:gap-3 md:gap-4">
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
           <!-- Primera fila: Dropdowns principales -->
-          <div class="col-12 sm:col-6 md:col-auto lg:col-3 xl:col-2">
+          <div class="col-12 md:col-6 lg:col-3">
             <p-dropdown
               id="categoria_id"
               formControlName="categoria_id"
@@ -68,11 +49,10 @@
               optionValue="value"
               placeholder="Categoría"
               [style]="{'width':'100%'}"
-              styleClass="w-full sm:w-auto">
+            >
             </p-dropdown>
           </div>
-
-          <div class="col-12 sm:col-6 md:col-auto lg:col-3 xl:col-2">
+          <div class="col-12 md:col-6 lg:col-3">
             <p-dropdown
               id="mixto_id"
               formControlName="mixto_id"
@@ -80,57 +60,240 @@
               optionValue="value"
               placeholder="Ventas,Productos,Precios"
               [style]="{'width':'100%'}"
-              styleClass="w-full sm:w-auto">
+              >
             </p-dropdown>
           </div>
-
-          <!-- Segunda fila: Búsqueda y fechas -->
-          <div class="col-12 md:col-12 lg:col-6 xl:col-5">
-            <div class="grid gap-2 sm:gap-3">
-              <div class="col-12 sm:col-8 md:col-6 lg:col-6 xl:col-8">
-          <span class="p-input-icon-left w-full">
-            <i class="pi pi-search"></i>
-            <input
-              pInputText
-              type="text"
-              placeholder="Buscar"
-              class="w-full"
-              [(ngModel)]="globalFilter"
-              (ngModelChange)="applyGlobalFilter()">
-          </span>
-              </div>
-
-              <div class="col-6 sm:col-2 md:col-3 lg:col-3 xl:col-2">
-                <p-calendar
-                  placeholder="Inicio"
-                  formControlName="fechaInicio"
-                  dateFormat="dd/mm/yy"
-                  [showIcon]="true"
-                  [style]="{'width':'100%'}"
-                  styleClass="w-full">
-                </p-calendar>
-              </div>
-
-              <div class="col-6 sm:col-2 md:col-3 lg:col-3 xl:col-2">
-                <p-calendar
-                  placeholder="Fin"
-                  formControlName="fechaFin"
-                  dateFormat="dd/mm/yy"
-                  [showIcon]="true"
-                  [style]="{'width':'100%'}"
-                  styleClass="w-full">
-                </p-calendar>
-              </div>
-            </div>
+          <div class="col-12 md:col-12 lg:col-2">
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar"
+                class="w-full"
+                [(ngModel)]="globalFilter"
+                (ngModelChange)="applyGlobalFilter()">
+            </span>
           </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Inicio"
+              formControlName="fechaInicio"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+              >
+            </p-calendar>
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Fin"
+              formControlName="fechaFin"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+              >
+            </p-calendar>
+          </div>
+
         </div>
       </div>
 
 
 
-      <div class="w-full panel-data bg-yellow-100">Área principal de la aplicación aquí</div>
-    </div>
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ============================================= -->
+          <!-- VERSIÓN MOBILE (iPhone) - 1 COLUMNA VERTICAL -->
+          <!-- ============================================= -->
+          <div class="col-12 block md:hidden">
+            <!-- Registro 1 -->
+            <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2 ">REGISTRO #1</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Registro 1 -->
+            <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2">REGISTRO #1</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
 
+          <!-- ========================================== -->
+          <!-- VERSIÓN TABLET - 3 COLUMNAS EN HORIZONTAL -->
+          <!-- ========================================== -->
+          <div class="col-12 hidden md:block lg:hidden">
+            <div class="grid">
+              <!-- Fila de Registros -->
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12 hidden lg:block">
+            <div class="surface-card p-2 border-round-lg shadow-2">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2">ID</th>
+                  <th class="text-left p-2">Nombre</th>
+                  <th class="text-left p-2">Edad</th>
+                  <th class="text-left p-2">Email</th>
+                  <th class="text-left p-2">Teléfono</th>
+                  <th class="text-left p-2">Ciudad</th>
+                  <th class="text-left p-2">País</th>
+                  <th class="text-left p-2">Estado</th>
+                  <th class="text-left p-2">Fecha</th>
+                  <th class="text-left p-2">Saldo</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2">101</td>
+                  <td class="p-2">Ana Pérez</td>
+                  <td class="p-2">28</td>
+                  <td class="p-2">ana@correo.com</td>
+                  <td class="p-2">555-1001</td>
+                  <td class="p-2">Lima</td>
+                  <td class="p-2">Perú</td>
+                  <td class="p-2 text-green-500">Activo</td>
+                  <td class="p-2">2023-01-15</td>
+                  <td class="p-2 text-primary font-bold">$1,200.00</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2">102</td>
+                  <td class="p-2">Carlos López</td>
+                  <td class="p-2">35</td>
+                  <td class="p-2">carlos@correo.com</td>
+                  <td class="p-2">555-1002</td>
+                  <td class="p-2">Bogotá</td>
+                  <td class="p-2">Colombia</td>
+                  <td class="p-2 text-red-500">Inactivo</td>
+                  <td class="p-2">2023-02-20</td>
+                  <td class="p-2 text-primary font-bold">$2,500.00</td>
+                </tr>
+                <tr>
+                  <td class="p-2">103</td>
+                  <td class="p-2">Luisa Méndez</td>
+                  <td class="p-2">31</td>
+                  <td class="p-2">luisa@correo.com</td>
+                  <td class="p-2">555-1003</td>
+                  <td class="p-2">Santiago</td>
+                  <td class="p-2">Chile</td>
+                  <td class="p-2 text-green-500">Activo</td>
+                  <td class="p-2">2023-03-10</td>
+                  <td class="p-2 text-primary font-bold">$1,800.00</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+        <!--grid-->
+      </div>
+    </div>
   </div>
 
 
@@ -168,7 +331,7 @@
 
 
 
-  <ng-template pTemplate="title">Lista de Rol</ng-template>
+  <!--<ng-template pTemplate="title">Lista de Rol</ng-template>-->
   <ng-template pTemplate="content">
     <p-toast></p-toast>
 

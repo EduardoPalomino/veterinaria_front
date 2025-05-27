@@ -148,3 +148,126 @@
 }
 
 
+
+/* ============ Estilos Base (Mobile First - <576px) ============ */
+/* Todos los estilos aquí se aplican desde 0px hacia arriba */
+.menu{padding: 0!important;}
+.app-content{padding: 0!important;background-color: #fff!important;}
+@layer primeng {
+  .p-card .p-card-body {
+    padding: 0rem!important;
+  }
+}
+.sidebar-header {
+  display:none!important;
+}
+.p-card .p-card-content {
+  padding: 0!important;
+}
+.button-black{
+  color: #000000 !important; border-color: #000000 !important;
+}
+.bg-black{
+  background-color: #eae9e9 !important;
+}
+/* TABLAS */
+.tabla-grid-ui{border-collapse: collapse;border-top: 1px solid #000000;border-bottom: 1px solid #000000;border-right: 1px solid #000000;}
+.tabla-grid-ui thead tr{background-color: #d1d5db;}
+.tabla-grid-ui tbody tr:nth-child(odd) {background-color: #f3f5f8;}
+.tabla-grid-ui tbody tr:nth-child(even) {background-color: #ffffff;}
+.tabla-grid-ui tbody tr:hover {background-color: #e5e7eb;transition: background-color 0.2s;}
+.tabla-grid-ui td,.tabla-grid-ui th {border-left: 1px solid #000000;border-right: 1px solid #000000;}
+.tabla-grid-ui td:last-child,.tabla-grid-ui th:last-child {border-right: none;}
+.p-card {box-shadow: none;}
+
+.custom-circle-button {
+  width: 100px !important;   /* Tamaño del círculo */
+  height: 100px !important;
+  background-color: #eae9e9 !important; /* Color primario de tu tema */
+  border: 2px solid #000000 !important;
+  color:#000;
+}
+.custom-circle-button:hover {
+  background-color: #d9d6d6 !important; /* Oscurecer al pasar el mouse */
+}
+.custom-round-button {
+  width: 2.5rem !important;
+  height: 2.5rem !important;
+}
+/* Estilos encapsulados con clase .login */
+.prime-table-responsive-grid{font-size: 11px!important;}
+.prime-table-responsive-grid .p-datatable-table {border-collapse: collapse !important;}
+.prime-table-responsive-grid .p-datatable-tbody > tr:nth-child(even) {background-color: #f8f9fa !important;}
+.prime-table-responsive-grid th{padding: 0;font-size: 11px!important; border: 1px solid #dee2e6 !important;}
+.prime-table-responsive-grid td{padding: 0;font-size: 11px!important; border: 1px solid #dee2e6 !important;}
+/*columnas de ventas*/
+/* Anchos personalizados */
+.table-ventas .col-cli{ width: 38px !important; }
+.table-ventas .col-prod { width: 134px !important; }
+.table-ventas .col-desc { width: 171px !important; }
+.table-ventas .col-tama { width: 57px !important; }
+.table-ventas .col-cant { width: 44px !important; }
+.table-ventas .col-cost { width: 39px !important; }
+.table-ventas .col-vent { width: 45px !important; }
+.table-ventas .col-accio { width: 150px !important; }
+.reporte{}
+.reporte .info-chart-bart{font-size: 12px;}
+.reporte .info-chart-bart .p-panel-header{border:none!important;padding-top: 1px;padding-bottom: 2px;}
+.reporte .info-chart-bart .p-panel-content{font-size: 10px;border:none!important;padding-top: 1px;padding-bottom: 2px;}
+
+.panel-filtro .busqueda{border-radius: 17px;text-align: center;}
+.panel-filtro .pi.pi-search {margin-left: 8px;}
+/*BUSQUEDA*/
+#busqueda_producto{border-radius: 17px;text-align: left;}
+#busqueda_mascota{border-radius: 17px;text-align: left;}
+#busqueda_mascota2{border-radius: 17px;text-align: left;}
+.panel-card-reporte .card-info .p-panel-header{color:#fff;border-bottom: 0;}
+.panel-card-reporte .card-info .p-panel-content{color:#fff;padding-top: 0;padding-bottom: 11px;}
+
+.panel-card-reporte .card-info:nth-child(1) .p-panel-header{background-color: #36beed;}
+.panel-card-reporte .card-info:nth-child(1) .p-panel-content{background-color: #36beed;}
+
+.panel-card-reporte .card-info:nth-child(2) .p-panel-header{background-color: #8f5ee3;}
+.panel-card-reporte .card-info:nth-child(2) .p-panel-content{background-color: #8f5ee3;}
+
+.panel-card-reporte .card-info:nth-child(3) .p-panel-header{background-color: #edcf36;}
+.panel-card-reporte .card-info:nth-child(3) .p-panel-content{background-color: #edcf36;}
+
+.panel-card-reporte .card-info:nth-child(4) .p-panel-header{background-color: #36ed8b;}
+.panel-card-reporte .card-info:nth-child(4) .p-panel-content{background-color: #36ed8b;}
+.btn-left{float: left;}
+.btn-right{float: right;}
+.cursor-click{cursor: pointer;}
+#modal_pago input{max-width: 100%!important;font-size: 13px!important;}
+#modal_pago .p-dropdown.p-dropdown-clearable .p-dropdown-label{font-size: 13px!important;}
+#modal_pago ul li{font-size: 13px!important;}
+  .buttonBorder{color: #2196F3!important;border: 1px solid!important;}
+@media screen and (min-width: 769px) {
+  .login {
+    padding: 2rem;
+  }
+
+  .login .login-container {
+    padding: 2rem;
+  }
+}
+/* ============ Small devices (sm - móviles grandes) ============ */
+@media (min-width: 576px) {
+
+}
+/* ============ Medium devices (md - tablets) ============ */
+@media (min-width: 768px) {
+
+}
+/* ============ Large devices (lg - laptops) ============ */
+@media (min-width: 992px) {
+
+}
+/* ============ Extra large devices (xl - desktops) ============ */
+@media (min-width: 1200px) {
+
+}
+/* ============ Extra extra large devices (xxl - pantallas grandes) ============ */
+@media (min-width: 1400px) {
+
+}

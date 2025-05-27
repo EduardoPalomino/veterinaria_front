@@ -1,5 +1,188 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Reporte</ng-template>
+  <!--REPORTES-->
+  <div class="flex grid">
+
+    <!-- Sidebar - 20% en desktop, 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'REPORTES'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+          <!--<moduleBoxLinks [title]="'REPORTES'"></moduleBoxLinks>-->
+        </div>
+        <div class="col-12">
+          <moduleBoxButton></moduleBoxButton>
+        </div>
+        <div class="col-12">
+          <!-- Crear Nuevo -->
+          <!--<div class="flex flex-column align-items-center" style="gap: 8px;">
+            &lt;!&ndash; Botón circular grande con ícono "+" &ndash;&gt;
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-rounded p-button-lg custom-circle-button"
+            ></button>
+
+            &lt;!&ndash; Label descriptivo &ndash;&gt;
+            <span class="text-lg font-medium">Generar cliente</span>
+          </div>-->
+
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <!-- Primera fila: Dropdowns principales -->
+          <!--<div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="categoria_id"
+              formControlName="categoria_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Categoría"
+              [style]="{'width':'100%'}"
+            >
+            </p-dropdown>
+          </div>-->
+          <div class="col-12 md:col-12 lg:col-2">
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Búsqueda PET"
+                class="w-full busqueda"
+                [(ngModel)]="globalFilter"
+                (ngModelChange)="applyGlobalFilter()">
+            </span>
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="mixto_id"
+              formControlName="mixto_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Ventas,Productos,Precios"
+              [style]="{'width':'100%'}"
+            >
+            </p-dropdown>
+          </div>
+
+
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Inicio"
+              formControlName="fechaInicio"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+            >
+            </p-calendar>
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Fin"
+              formControlName="fechaFin"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+            >
+            </p-calendar>
+          </div>
+
+        </div>
+      </div>
+      <div class="panel-card-reporte p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <div class="col-12 md:col-6 lg:col-3 card-info">
+            <p-panel header="20000" class="bg-blue-500">
+              <p class="m-0">
+                Productos en Inventario
+              </p>
+            </p-panel>
+          </div>
+          <div class="col-12 md:col-6 lg:col-3 card-info">
+            <p-panel header="$20000" class="bg-purple-500">
+              <p class="m-0">
+                Precio del Inventario
+              </p>
+            </p-panel>
+          </div>
+          <div class="col-12 md:col-6 lg:col-3 card-info">
+            <p-panel header="20000" class="bg-yellow-500">
+              <p class="m-0">
+                Costo del Inventario
+              </p>
+            </p-panel>
+          </div>
+          <div class="col-12 md:col-6 lg:col-3 card-info">
+            <p-panel header="20000" class="bg-green-500">
+              <p class="m-0">
+                Utilidad total
+              </p>
+            </p-panel>
+          </div>
+        </div>
+      </div>
+
+
+      <div class="w-full panel-data grid reporte">
+        <!--grid-->
+        <div class="ol-12 md:col-3 lg:col-3 info-chart-bart d-flex flex-column justify-content-end">
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+          <p-panel header="Productos más vendidos">
+            <p class="m-0">
+              Champu de Perro 200 Unid
+            </p>
+          </p-panel>
+
+        </div>
+        <div class="col-12 md:col-9 lg:col-9">
+          <p-chart type="bar" [data]="data" [options]="options" class="h-[30rem]" />
+        </div>
+
+        <!--grid-->
+      </div>
+
+    </div>
+
+  </div>
+  <!--REPORTES-->
+<!--  <ng-template pTemplate="title">Lista de Reporte</ng-template>
   <ng-template pTemplate="content">
     <p-toast></p-toast>
 
@@ -39,16 +222,16 @@
         <tr>
           <td>{{ i + 1 }}</td>
           <td>{{ reporte.tipo_reporte
-      
+
       }}</td>
           <td>{{ reporte.fecha_generado
-      | date: 'yyyy-MM-dd' 
+      | date: 'yyyy-MM-dd'
       }}</td>
           <td>{{ reporte.contenido
-      
+
       }}</td>
           <td>{{ reporte.usuario_nombre
-      
+
       }}</td>
           <td>
             <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', reporte)"></button>
@@ -57,38 +240,38 @@
         </tr>
       </ng-template>
     </p-table>
-    <!-- Confirmation -->
+    &lt;!&ndash; Confirmation &ndash;&gt;
     <p-confirmDialog></p-confirmDialog>
-    <!-- Confirmation -->
-    <!-- Modal -->
+    &lt;!&ndash; Confirmation &ndash;&gt;
+    &lt;!&ndash; Modal &ndash;&gt;
     <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
       <form [formGroup]="reporteForm" >
         <div class="p-fluid">
-           
+
     <div class="p-field">
       <label>Tipo_reporte</label>
-      
+
         <input pInputText id="tipo_reporteInput" formControlName="tipo_reporte" />
-      
+
     </div>
-  
+
 
     <div class="p-field">
       <label>Fecha_generado</label>
-      
+
         <p-calendar formControlName="fecha_generado" dateFormat="mm/dd/yy" [showIcon]="true">
         </p-calendar>
-      
+
     </div>
-  
+
 
     <div class="p-field">
       <label>Contenido</label>
-      
+
         <input pInputText id="contenidoInput" formControlName="contenido" />
-      
+
     </div>
-  
+
           <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
            <div class="p-field">
             <label for="usuario_id">Usuario</label>
@@ -109,6 +292,6 @@
         </div>
       </form>
     </p-dialog>
-    <!-- Modal -->
-  </ng-template>
+    &lt;!&ndash; Modal &ndash;&gt;
+  </ng-template>-->
 </p-card>

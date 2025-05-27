@@ -1,6 +1,7 @@
 export interface Producto {
   _id: string;
   nombre: string;
+  foto: string;
   categoria_producto_id: string;
   tamano: string;
   precio_venta: string;

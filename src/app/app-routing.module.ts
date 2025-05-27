@@ -17,14 +17,16 @@ import { CompraListComponent } from './features/compras/pages/list/list.componen
 import { Detalle_compraListComponent } from './features/detalle_compras/pages/list/list.component';
 import { VentaListComponent } from './features/ventas/pages/list/list.component';
 import { Detalle_ventaListComponent } from './features/detalle_ventas/pages/list/list.component';
-
 import { Historia_clinicaListComponent } from './features/historia_clinicas/pages/list/list.component';
 import { ReporteListComponent } from './features/reportes/pages/list/list.component';
-
+import { DashboardListComponent } from './features/dashboards/pages/list/list.component';
+import {InventarioListComponent} from "./features/inventarios/pages/list/list.component";
+import {LoginListComponent} from "./features/logins/pages/list/list.component";
+import {PagoListComponent} from "./features/pagos/pages/list/list.component";
 const routes: Routes = [
   {
     path: '',
-    redirectTo: 'admin',
+    redirectTo: 'login',
     pathMatch: 'full'  // <- Si entras a localhost:4200 te manda a /admin
   },
   {
@@ -33,12 +35,24 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        redirectTo: 'users',
+        redirectTo: 'dashboards',
         pathMatch: 'full'  // <- Si entras a /admin te manda a /admin/users
+      },
+      {
+        path: 'inventarios',
+        component: InventarioListComponent
+      },
+      {
+        path: 'login',
+        component: LoginListComponent
       },
       {
         path: 'users',
         component: UsuarioListComponent
+      },
+      {
+        path: 'dashboards',
+        component: DashboardListComponent
       },
       {
         path:'rols',
@@ -99,6 +113,10 @@ const routes: Routes = [
       {
         path:'reportes',
         component:ReporteListComponent
+      },
+      {
+        path:'pagos',
+        component:PagoListComponent
       }
     ]
   },

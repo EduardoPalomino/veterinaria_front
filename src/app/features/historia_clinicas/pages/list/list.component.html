@@ -1,5 +1,469 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Historia_clinica</ng-template>
+  <div class="flex grid">
+
+    <!-- Sidebar - 20% en desktop, 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'HISTORIA CLINICA'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+          <!--<moduleBoxLinks [title]="'VENTAS'"></moduleBoxLinks>-->
+        </div>
+        <div class="col-12">
+
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+          <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12">
+          <!-- Crear Nuevo -->
+          <div class="flex flex-column align-items-center" style="gap: 8px;">
+            <!-- Botón circular grande con ícono "+" -->
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-rounded p-button-lg custom-circle-button"
+              (click)="openModal('Nuevo')"
+            ></button>
+
+            <!-- Label descriptivo -->
+            <span class="text-lg font-medium" (click)="openModal('Nuevo')" style="cursor: pointer;">Generar Historia</span>
+
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+          <!-- detalle -->
+          <!-- item -->
+          <div class="grid">
+            <div class="col-2"  *ngIf="modoDetalle">
+              <input pInputText  [(ngModel)]="codigoHU"    style='font-size: 12px;' />
+            </div>
+            <div class="col-12 md:col-6 lg:col-4">
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <p-dropdown
+                id="busqueda_mascota"
+                [options]="selected_mascota"
+                class="busqueda"
+                formControlName="busqueda_mascota"
+                optionLabel="label"
+                placeholder="Búqueda PET"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="onAddMascotaToGrid($event)"
+              >
+              </p-dropdown>
+            </span>
+
+            </div>
+            <div class="col-6 md:col-6 lg:col-2" *ngIf="modoItem">
+              <p-calendar
+                placeholder="Inicio"
+                formControlName="fechaInicio"
+                dateFormat="dd/mm/yy"
+                [showIcon]="true"
+
+              >
+              </p-calendar>
+            </div>
+            <div class="col-6 md:col-6 lg:col-2" *ngIf="modoItem">
+              <p-calendar
+                placeholder="Fin"
+                formControlName="fechaFin"
+                dateFormat="dd/mm/yy"
+                [showIcon]="true"
+              >
+              </p-calendar>
+            </div>
+          </div>
+
+      </div>
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ============================================= -->
+          <!-- VERSIÓN MOBILE (iPhone) - 1 COLUMNA VERTICAL -->
+          <!-- ============================================= -->
+          <div class="col-12 block md:hidden">
+            <!-- Registro 1 -->
+            <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2 ">REGISTRO #1</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Registro 1 -->
+            <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2">REGISTRO #1</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VERSIÓN TABLET - 3 COLUMNAS EN HORIZONTAL -->
+          <!-- ========================================== -->
+          <div class="col-12 hidden md:block lg:hidden">
+            <div class="grid">
+              <!-- Fila de Registros -->
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+              <div class="col-4">
+                <div class="surface-card p-3 m-2 border-round-lg shadow-1">
+                  <table class="w-full tabla-grid-ui">
+                    <thead>
+                    <tr class="border-bottom-1 surface-border">
+                      <th class="text-left p-2 ">REGISTRO #1</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>ID : </strong>101</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Ana Pérez</td>
+                    </tr>
+                    <tr class="border-bottom-1 surface-border">
+                      <td class="p-2 pt-0 pb-0"><strong>Edad : </strong>28</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-10  lg:block">
+            <div class="surface-card p-2 border-round-lg shadow-2" >
+              <p-table #table [value]="itemsHistoria" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
+                       [(selection)]="selected_checkbox_historia"
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">CÓDIGO HU
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">CLIENTE
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-desc">TIPO DE VISITA
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-tama">FECHA
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th class="col-accio">
+
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-historia let-i="rowIndex">
+                  <tr>
+                    <td class="col-cli cursor-click" (click)="onItemToDetail(historia)">{{historia.codigo_hu}}</td>
+                    <td class="col-prod cursor-click" (click)="onItemToDetail(historia)">{{historia.mascota}}</td>
+                    <td class="col-desc cursor-click" (click)="onItemToDetail(historia)">{{historia.tipo_visita}}</td>
+                    <td class="col-tama cursor-click" (click)="onItemToDetail(historia)">{{historia.fecha}}</td>
+                    <td class="col-accio">
+                      <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', historia)"></button>
+                      <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(historia)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+            <div class="surface-card p-2 border-round-lg shadow-2 grid" *ngIf="modoDetalle">
+              <div class="col-6">
+
+                <p-table #table [value]="[itemHistoria]" [paginator]="false" [rows]="10"
+                         [rowsPerPageOptions]="[10, 20, 50, 100]" [responsiveLayout]="'scroll'"
+                         class="prime-table-responsive-grid table-ventas">
+
+                  <ng-template pTemplate="body" let-item>
+                    <!-- Grupo: Datos de la Mascota -->
+                    <tr>
+                      <td><strong>Nombre</strong></td>
+                      <td>{{item.mascota || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Propietario</strong></td>
+                      <td>{{item.cliente || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Raza</strong></td>
+                      <td>{{item.raza || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Especie</strong></td>
+                      <td>{{item.especie || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Edad</strong></td>
+                      <td>{{item.edad || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Peso</strong></td>
+                      <td>{{item.peso || '--'}} kg</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Tipo de Visita</strong></td>
+                      <td>{{item.tipo_visita || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Signos </strong></td>
+                      <td>{{item.signo || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Alergias</strong></td>
+                      <td>{{item.alergia || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Tratamientos</strong></td>
+                      <td>{{item.tratamiento || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Fecha de Próximo Control</strong></td>
+                      <td>{{item.fecha_proxima_control || '--'}}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+              <div class="col-6">
+                <p-table #table [value]="[itemHistoria]" [paginator]="false" [rows]="10"
+                         [rowsPerPageOptions]="[10, 20, 50, 100]" [responsiveLayout]="'scroll'"
+                         class="prime-table-responsive-grid table-ventas">
+
+                  <ng-template pTemplate="body" let-item>
+                    <!-- Grupo: Datos de la Mascota -->
+                    <tr>
+                      <td><strong>Frecuencia Cardiaca</strong></td>
+                      <td>{{item.frecuencia_cardiaca || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Frecuencia Respiratoria</strong></td>
+                      <td>{{item.frecuencia_respiratoria || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Temperatura</strong></td>
+                      <td>{{item.temperatura || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Pruebas complementarias</strong></td>
+                      <td>{{item.prueba_complementaria || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>TLLC</strong></td>
+                      <td>{{item.tllc || '--'}}</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Diagnostico / Indicaciones</strong></td>
+                      <td>{{item.diagnostico || '--'}} kg</td>
+                    </tr>
+                    <tr>
+                      <td><strong>Archivos</strong></td>
+                      <td>{{item.archivo || '--'}}</td>
+                    </tr>
+                  </ng-template>
+                </p-table>
+              </div>
+
+            </div>
+
+          </div>
+          <div class="col-2 hidden lg:block">
+
+          </div>
+        </div>
+
+        <!--grid-->
+      </div>
+    </div>
+
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="historia_clinicaForm" >
+        <div class="p-fluid">
+
+          <div class="p-field">
+            <label>Fecha</label>
+
+            <p-calendar formControlName="fecha" dateFormat="mm/dd/yy" [showIcon]="true">
+            </p-calendar>
+
+          </div>
+
+
+          <div class="p-field">
+            <label>Tipo de Visita</label>
+
+            <input pInputText id="motivo_consultaInput" formControlName="motivo_consulta" />
+
+          </div>
+
+
+          <div class="p-field">
+            <label>Diagnostico</label>
+
+            <input pInputText id="diagnosticoInput" formControlName="diagnostico" />
+
+          </div>
+
+
+          <div class="p-field">
+            <label>Tratamiento</label>
+
+            <input pInputText id="tratamientoInput" formControlName="tratamiento" />
+
+          </div>
+
+
+          <div class="p-field">
+            <label>Observaciones</label>
+
+            <input pInputText id="observacionesInput" formControlName="observaciones" />
+
+          </div>
+
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+          <div class="p-field">
+            <label for="mascota_id">Mascota</label>
+            <p-dropdown
+              id="mascota_id"
+              [options]="selected_mascota"
+              formControlName="mascota_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeMascota($event)"
+              placeholder="Selecciona un mascota">
+            </p-dropdown>
+          </div>
+          <div class="p-field">
+            <label for="usuario_id">Usuario</label>
+            <p-dropdown
+              id="usuario_id"
+              [options]="selected_usuario"
+              formControlName="usuario_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeUsuario($event)"
+              placeholder="Selecciona un usuario">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+    <p-toast></p-toast>
+  </div>
+
+
+
+<!--  <ng-template pTemplate="title">Lista de Historia_clinica</ng-template>
   <ng-template pTemplate="content">
     <p-toast></p-toast>
 
@@ -42,25 +506,25 @@
         <tr>
           <td>{{ i + 1 }}</td>
           <td>{{ historia_clinica.mascota_nombre
-      
+
       }}</td>
           <td>{{ historia_clinica.fecha
-      | date: 'yyyy-MM-dd' 
+      | date: 'yyyy-MM-dd'
       }}</td>
           <td>{{ historia_clinica.motivo_consulta
-      
+
       }}</td>
           <td>{{ historia_clinica.diagnostico
-      
+
       }}</td>
           <td>{{ historia_clinica.tratamiento
-      
+
       }}</td>
           <td>{{ historia_clinica.observaciones
-      
+
       }}</td>
           <td>{{ historia_clinica.usuario_nombre
-      
+
       }}</td>
           <td>
             <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', historia_clinica)"></button>
@@ -69,86 +533,6 @@
         </tr>
       </ng-template>
     </p-table>
-    <!-- Confirmation -->
-    <p-confirmDialog></p-confirmDialog>
-    <!-- Confirmation -->
-    <!-- Modal -->
-    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="historia_clinicaForm" >
-        <div class="p-fluid">
-           
-    <div class="p-field">
-      <label>Fecha</label>
-      
-        <p-calendar formControlName="fecha" dateFormat="mm/dd/yy" [showIcon]="true">
-        </p-calendar>
-      
-    </div>
-  
 
-    <div class="p-field">
-      <label>Motivo_consulta</label>
-      
-        <input pInputText id="motivo_consultaInput" formControlName="motivo_consulta" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Diagnostico</label>
-      
-        <input pInputText id="diagnosticoInput" formControlName="diagnostico" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Tratamiento</label>
-      
-        <input pInputText id="tratamientoInput" formControlName="tratamiento" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Observaciones</label>
-      
-        <input pInputText id="observacionesInput" formControlName="observaciones" />
-      
-    </div>
-  
-          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-           <div class="p-field">
-            <label for="mascota_id">Mascota</label>
-            <p-dropdown
-              id="mascota_id"
-              [options]="selected_mascota"
-              formControlName="mascota_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeMascota($event)"
-              placeholder="Selecciona un mascota">
-            </p-dropdown>
-          </div>
-      <div class="p-field">
-            <label for="usuario_id">Usuario</label>
-            <p-dropdown
-              id="usuario_id"
-              [options]="selected_usuario"
-              formControlName="usuario_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeUsuario($event)"
-              placeholder="Selecciona un usuario">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="p-dialog-footer">
-          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
-        </div>
-      </form>
-    </p-dialog>
-    <!-- Modal -->
-  </ng-template>
+  </ng-template>-->
 </p-card>

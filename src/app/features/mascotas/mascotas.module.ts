@@ -22,6 +22,10 @@ import { FormComponent } from './pages/form/form.component';
 
 // Servicios
 import { MascotaService } from './services/mascota.service';
+import {ImageModule} from "primeng/image";
+import {Menu_topsModule} from "../menu_tops/menu_tops.module";
+import {Module_box_linksModule} from "../module_box_links/module_box_links.module";
+import {Module_box_titlesModule} from "../module_box_titles/module_box_titles.module";
 
 @NgModule({
   declarations: [
@@ -41,7 +45,11 @@ import { MascotaService } from './services/mascota.service';
     DropdownModule,
     ToastModule,
     ConfirmDialogModule,
-    CalendarModule
+    CalendarModule,
+    ImageModule,
+    Menu_topsModule,
+    Module_box_linksModule,
+    Module_box_titlesModule
   ],
   providers: [
     MessageService,

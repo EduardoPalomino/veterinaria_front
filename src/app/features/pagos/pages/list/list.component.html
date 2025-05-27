@@ -1,0 +1,184 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Pago</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Pago"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredPagos" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['venta_id','cuota','monto','estado','fecha_pago','fecha_vencimiento']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="venta_id">Venta_id <p-sortIcon field="venta_id"></p-sortIcon></th>
+          <th pSortableColumn="cuota">Cuota <p-sortIcon field="cuota"></p-sortIcon></th>
+          <th pSortableColumn="monto">Monto <p-sortIcon field="monto"></p-sortIcon></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+          <th pSortableColumn="fecha_pago">Fecha_pago <p-sortIcon field="fecha_pago"></p-sortIcon></th>
+          <th pSortableColumn="fecha_vencimiento">Fecha_vencimiento <p-sortIcon field="fecha_vencimiento"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-pago let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ pago.venta_nombre
+
+      }}</td>
+          <td>{{ pago.cuota
+
+      }}</td>
+          <td>{{ pago.monto
+
+      }}</td>
+          <td>{{ pago.estado
+
+      }}</td>
+          <td>{{ pago.fecha_pago
+      | date: 'yyyy-MM-dd'
+      }}</td>
+          <td>{{ pago.fecha_vencimiento
+      | date: 'yyyy-MM-dd'
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', pago)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(pago)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal Dialog -->
+    <p-dialog [(visible)]="modalVisible"
+              [header]="modalTitle"
+              [modal]="true"
+              [closable]="true"
+              [style]="{width: '500px'}"
+              [breakpoints]="{'960px': '75vw', '640px': '90vw'}"
+              [draggable]="false"
+              [resizable]="false">
+
+      <form [formGroup]="pagoForm" class="modal-form">
+        <div class="p-fluid grid p-2">
+
+          <!-- Cuota Field -->
+          <div class="p-field col-12 md:col-6">
+            <label for="cuotaInput">Nro Cuota</label>
+            <span class="p-input-icon-left">
+          <input pInputText id="cuotaInput" formControlName="cuota" placeholder="Ingrese cuota" />
+        </span>
+          </div>
+
+          <!-- Monto Field -->
+          <div class="p-field col-12 md:col-6">
+            <label for="montoInput">Monto</label>
+            <span class="p-input-icon-left">
+          <i class="pi pi-money-bill"></i>
+          <input pInputText id="montoInput" formControlName="monto" placeholder="Ingrese monto" />
+        </span>
+          </div>
+
+          <!-- Estado Field -->
+          <div class="p-field col-6">
+            <label for="estadoInput">Estado</label>
+            <p-dropdown id="estadoInput"
+                        formControlName="estado"
+                        [options]="selected_estado"
+                        placeholder="Seleccione estado">
+            </p-dropdown>
+          </div>
+          <!-- Medio Pago Field -->
+          <div class="p-field col-6">
+            <label for="medio_pagoInput">Medio Pago</label>
+            <p-dropdown id="medio_pagoInput"
+                        formControlName="medio_pago"
+                        [options]="selected_medio_pago"
+                        placeholder="Seleccione Medio de Pago">
+            </p-dropdown>
+          </div>
+
+
+          <!-- Fecha Pago Field -->
+          <div class="p-field col-12 md:col-6">
+            <label>Fecha de Pago</label>
+            <p-calendar
+              id="fecha_pagoInput"
+              formControlName="fecha_pago"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showButtonBar]="true">
+            </p-calendar>
+          </div>
+
+          <!-- Fecha Vencimiento Field -->
+          <div class="p-field col-12 md:col-6">
+            <label>Fecha de Vencimiento</label>
+            <p-calendar
+                        id="fecha_vencimientoInput"
+                        formControlName="fecha_vencimiento"
+                        dateFormat="dd/mm/yy"
+                        [showIcon]="true"
+                        [showButtonBar]="true"
+                       >
+            </p-calendar>
+          </div>
+
+          <!-- Hidden ID Field -->
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true" />
+
+          <!-- Venta Dropdown -->
+          <div class="p-field col-12" [hidden]="true">
+            <label for="venta_id">Venta</label>
+            <p-dropdown id="venta_id"
+                        [options]="selected_venta"
+                        formControlName="venta_id"
+                        optionLabel="label"
+                        optionValue="value"
+                        (onChange)="onChangeVenta($event)"
+                        placeholder="Seleccione una venta"
+                        [filter]="true"
+                        filterBy="label"
+                        [showClear]="true">
+            </p-dropdown>
+          </div>
+        </div>
+
+        <!-- Dialog Footer -->
+        <div class="p-dialog-footer flex justify-content-end">
+          <button pButton type="button"
+                  label="Cancelar"
+                  icon="pi pi-times"
+                  class="p-button-text p-button-danger"
+                  (click)="modalVisible = false">
+          </button>
+          <button pButton type="button"
+                  label="Registrar Pago"
+                  icon="pi pi-check"
+                  class="p-button-text p-button-success"
+                  (click)="saveRegistro()">
+          </button>
+        </div>
+      </form>
+    </p-dialog>
+  </ng-template>
+</p-card>

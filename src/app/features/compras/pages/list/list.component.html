@@ -1,7 +1,320 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Compra</ng-template>
-  <ng-template pTemplate="content">
+  <div class="flex grid">
+
+    <!-- Sidebar - 20% en desktop, 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'COMPRAS'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+          <moduleBoxLinks [title]="'COMPRAS'"></moduleBoxLinks>
+        </div>
+        <div class="col-12">
+
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+          <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12">
+          <!-- Crear Nuevo -->
+          <div class="flex flex-column align-items-center" style="gap: 8px;">
+            <!-- Botón circular grande con ícono "+" -->
+            <!-- Label descriptivo -->
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <!-- Primera fila: Dropdowns principales -->
+          <div class="col-12 md:col-6 lg:col-5">
+
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <p-dropdown
+                id="busqueda_producto"
+                [options]="selected_producto"
+                class="busqueda"
+                formControlName="busqueda_producto"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Buscar Producto"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="onAddProductToBuy($event)"
+              >
+              </p-dropdown>
+            </span>
+
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
+
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-barcode"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar Barcode"
+                class="w-full"
+                [(ngModel)]="globalFilter"
+                (ngModelChange)="applyGlobalFilter()">
+            </span>
+
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="mixto_id"
+              [options]="selected_proveedor"
+              formControlName="mixto_id"
+              optionLabel="label"
+              placeholder="Asignar Proveedor"
+              [style]="{'width':'100%'}"
+              [filter]="true"
+              filterBy="label"
+              [virtualScroll]="true"
+              [virtualScrollItemSize]="34"
+              [scrollHeight]="'300px'"
+              [showClear]="true"
+              (onChange)="onAddProveedorToBuy($event)"
+            >
+            </p-dropdown>
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+
+          </div>
+          <div class="col-12 md:col-12 lg:col-12">
+            <span>Total de Nueva compra <strong>S/. {{ compraNuevaMonto }}</strong> </span>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+
+
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12  lg:block">
+
+            <div class="surface-card p-2 border-round-lg shadow-2">
+
+              <p-table #table [value]="itemsCompra" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
+                       [(selection)]="selected_checkbox_producto"
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">PROVEEDOR
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">PRODUCTO
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-desc">DESCRIPCION
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-tama">TAMAÑO
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cant">CANT
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">COST
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-vent">COMPRA S/
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+                    <th class="col-accio">
+                      <p-tableHeaderCheckbox (click)="onCheckboxTogglex()"></p-tableHeaderCheckbox>
+
+                      <button pButton icon="pi pi-user-plus" label="Comprar"
+                              style="margin-left: 50px;"
+                              class="p-button-sm p-button-outlined" (click)="realizarCompra()">
+                      </button>
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-producto let-i="rowIndex">
+                  <tr>
+                    <td class="col-cli">{{producto.proveedor}}</td>
+                    <td class="col-prod">{{producto.nombre}}</td>
+                    <td class="col-desc">{{producto.descripcion}}</td>
+                    <td class="col-tama">{{producto.tamano}}</td>
+                    <td class="col-cant"><input pInputText  [(ngModel)]="producto.stock"  class="col-12"  style="font-size: 12px;" (input)="onUpdateProductToBuyQuantity(producto,i)"/></td>
+                    <td class="col-cost"><input pInputText [(ngModel)]="producto.precio_compra" class="col-12" style="font-size: 12px;" (input)="onUpdateProductToBuyPrice(producto,i)"/></td>
+                    <td class="col-vent">{{producto.subtotal}}
+                    </td>
+                    <td class="col-accio">
+                      <p-tableCheckbox
+                        [value]="producto"
+                        (click)="onCheckboxTogglex()"
+                      ></p-tableCheckbox>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <h2>Historial de Compras</h2>
+              <p-table  [value]="historial_compras" [paginator]="false" [rows]="10"
+                        [rowsPerPageOptions]="[10, 20, 50, 100]"
+                        [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                        [responsiveLayout]="'scroll'"
+                        class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">PROVEEDOR
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">PRODUCTO
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-desc">DESCRIPCION
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-tama">TAMAÑO
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cant">CANT
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">COST
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-vent">COMPRA S/
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-historial_compra let-i="rowIndex" >
+                  <tr>
+                    <td class="col-cli">{{historial_compra.proveedor}}</td>
+                    <td class="col-prod">{{historial_compra.producto}}</td>
+                    <td class="col-desc">{{historial_compra.descripcion}}</td>
+                    <td class="col-tama">{{historial_compra.tamano}}</td>
+                    <td class="col-cant">{{historial_compra.cantidad}}</td>
+                    <td class="col-cost">{{historial_compra.precio}}</td>
+                    <td class="col-vent">{{historial_compra.compra_total}}
+                    </td>
+
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+
+        </div>
+
+        <!--grid-->
+      </div>
+
+    </div>
     <p-toast></p-toast>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="compraForm" >
+        <div class="p-fluid">
+          <div class="p-field">
+            <label for="producto_id">Producto</label>
+            <p-dropdown
+              id="producto_id"
+              [options]="selected_producto"
+              formControlName="producto_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProducto($event)"
+              placeholder="Selecciona un producto">
+            </p-dropdown>
+          </div>
+          <div class="p-field">
+            <label>Cantidad</label>
+            <p-inputNumber id="cantidadInput" formControlName="cantidad" mode="decimal" [step]="1" (input)="calcularTotal()"></p-inputNumber>
+          </div>
+          <div class="p-field">
+            <label>Precio Unitario</label>
+            <input pInputText id="precioInput" formControlName="precio" (input)="calcularTotal()"  />
+          </div>
+          <div class="p-field">
+            <label>Total Pagar</label>
+            <input pInputText id="totalInput" formControlName="total" [disabled]="true"/>
+          </div>
+          <div class="p-field">
+            <label>Fecha</label>
+            <p-calendar formControlName="fecha" dateFormat="dd/mm/yy" [showIcon]="true">
+            </p-calendar>
+          </div>
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+          <div class="p-field">
+            <label for="proveedor_id">Proveedor</label>
+            <p-dropdown
+              id="proveedor_id"
+              [options]="selected_proveedor"
+              formControlName="proveedor_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeProveedor($event)"
+              placeholder="Selecciona un proveedor">
+            </p-dropdown>
+          </div>
+          <div class="p-field">
+            <label for="usuario_id">Usuario</label>
+            <p-dropdown
+              id="usuario_id"
+              [options]="selected_usuario"
+              formControlName="usuario_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeUsuario($event)"
+              placeholder="Selecciona un usuario">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </div>
+
+<!--  <ng-template pTemplate="title">Lista de Compra</ng-template>
+  <ng-template pTemplate="content">
+
 
     <div class="p-datatable-header">
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -57,74 +370,6 @@
         </tr>
       </ng-template>
     </p-table>
-    <!-- Confirmation -->
-    <p-confirmDialog></p-confirmDialog>
-    <!-- Confirmation -->
-    <!-- Modal -->
-    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="compraForm" >
-        <div class="p-fluid">
-          <div class="p-field">
-            <label for="producto_id">Producto</label>
-            <p-dropdown
-              id="producto_id"
-              [options]="selected_producto"
-              formControlName="producto_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeProducto($event)"
-              placeholder="Selecciona un producto">
-            </p-dropdown>
-          </div>
-          <div class="p-field">
-            <label>Cantidad</label>
-              <p-inputNumber id="cantidadInput" formControlName="cantidad" mode="decimal" [step]="1" (input)="calcularTotal()"></p-inputNumber>
-          </div>
-          <div class="p-field">
-            <label>Precio Unitario</label>
-            <input pInputText id="precioInput" formControlName="precio" (input)="calcularTotal()"  />
-          </div>
-          <div class="p-field">
-            <label>Total Pagar</label>
-              <input pInputText id="totalInput" formControlName="total" [disabled]="true"/>
-          </div>
-          <div class="p-field">
-            <label>Fecha</label>
-            <p-calendar formControlName="fecha" dateFormat="dd/mm/yy" [showIcon]="true">
-            </p-calendar>
-          </div>
-          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-           <div class="p-field">
-            <label for="proveedor_id">Proveedor</label>
-            <p-dropdown
-              id="proveedor_id"
-              [options]="selected_proveedor"
-              formControlName="proveedor_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeProveedor($event)"
-              placeholder="Selecciona un proveedor">
-            </p-dropdown>
-          </div>
-      <div class="p-field">
-            <label for="usuario_id">Usuario</label>
-            <p-dropdown
-              id="usuario_id"
-              [options]="selected_usuario"
-              formControlName="usuario_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeUsuario($event)"
-              placeholder="Selecciona un usuario">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="p-dialog-footer">
-          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
-        </div>
-      </form>
-    </p-dialog>
-    <!-- Modal -->
-  </ng-template>
+
+  </ng-template>-->
 </p-card>

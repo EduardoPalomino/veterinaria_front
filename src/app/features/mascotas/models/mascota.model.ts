@@ -3,6 +3,7 @@ import { Mascota } from '../interfaces/mascota.interface';
 export class MascotaModel implements Mascota {
   _id = '';
   nombre = '';
+  foto = '';
   especie_id = '';
   raza_id = '';
   fecha_nacimiento = '';

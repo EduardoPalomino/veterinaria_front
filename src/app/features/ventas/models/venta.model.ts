@@ -4,6 +4,9 @@ export class VentaModel implements Venta {
   _id = '';
   fecha = '';
   total = '';
+  tipo_pago = '';
+  cantidad_cuota = 0;
+  estado= '';
   cliente_id = '';
   usuario_id = '';
   created_at = '';

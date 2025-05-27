@@ -17,17 +17,35 @@ export class ProveedorListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
-  
-  
+  selected_proveedor: { label: string; value: string }[] = [];
   proveedorForm: FormGroup;
   mode:string='';
-
+  proveedor:any= {
+    _id:'',
+    nombre: '',
+    ruc:'',
+    telefono: '',
+    email: '',
+    direccion: '',
+    contacto:'',
+    observaciones: ''
+  }
+  proveedorGrid: any = {
+    _id: '',
+    nombre:'',
+    ruc:'',
+    telefono: '',
+    email: '',
+    direccion: '',
+    contacto: '',
+    observaciones:''
+  };
   constructor(
   private fb: FormBuilder,
   private proveedorService: ProveedorService,
   private confirmationService: ConfirmationService,
   private messageService: MessageService
-  
+
   ) {
     this.proveedorForm = this.fb.group({
       _id: [null],
@@ -42,7 +60,7 @@ export class ProveedorListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     
+
     this.loadProveedors();
   }
 
@@ -51,9 +69,15 @@ export class ProveedorListComponent implements OnInit {
       next: (data) => {
         this.proveedors = data.map(proveedor=>({
           ...proveedor,
-          
+
         }));
         this.filteredProveedors = [...this.proveedors];
+
+        this.selected_proveedor = data.map(p => ({
+          label: p.nombre,
+          value: p._id
+        }));
+
       },
       error: (err) => {
         console.error('Error al cargar Proveedors:', err);
@@ -168,9 +192,6 @@ deleteProveedor(proveedor: Proveedor) {
       }
     }
   }
-
-  
-
   mensajeConfirmacion(proveedor: Proveedor,mensaje:String){
     this.messageService.add({
       severity: 'success',
@@ -179,6 +200,25 @@ deleteProveedor(proveedor: Proveedor) {
     });
   }
 
+  onAddProveedorTGrid($event:any){
+    let proveedor_id= $event.value.value;
+    this.proveedor = this.findProveedor(proveedor_id);
+    this.proveedorGrid = {
+      _id: this.proveedor._id,
+      nombre:this.proveedor.nombre,
+      ruc:this.proveedor.ruc,
+      telefono: this.proveedor.telefono,
+      email: this.proveedor.email,
+      direccion: this.proveedor.direccion,
+      contacto: this.proveedor.contacto,
+      observaciones:this.proveedor.observaciones
+    }
+    console.log(proveedor_id)
+    console.log(JSON.stringify(this.proveedorGrid))
+  }
 
+  private findProveedor(proveedor_id: string): any{
+    return this.proveedors.find(p => p._id === proveedor_id);
+  }
 
 }

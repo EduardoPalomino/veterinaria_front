@@ -1,0 +1,155 @@
+<p-card>
+    <!-- INVENTARIOS-->
+  <div class="flex grid">
+     <!--Sidebar - 20% en desktop, 100% en móvil-->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100">
+      <div class="grid flex">
+        <div class="col-12">
+          <moduleBoxTitle [title]="'TIENDA'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!--BOTONES-->
+        <moduleBoxButton></moduleBoxButton>
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <form [formGroup]="filtroForm">
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <!-- Primera fila: Dropdowns principales -->
+          <div class="col-12 md:col-6 lg:col-3">
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <p-dropdown
+                id="busqueda_categoria"
+                [options]="selected_categoria"
+                class="busqueda"
+                formControlName="busqueda_categoria"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Buscar Categoría"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="changeCategoriaproducto($event)"
+              >
+              </p-dropdown>
+            </span>
+
+          </div>
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Inicio"
+              formControlName="finicio"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showButtonBar]="true">
+            </p-calendar>
+          </div>
+          <div class="col-6 md:col-6 lg:col-2" >
+            <p-calendar
+              placeholder="Fin"
+              formControlName="fechaFin"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+            >
+            </p-calendar>
+          </div>
+        </div>
+      </div>
+      </form>
+
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+
+
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12 lg:block">
+
+            <div class="surface-card p-2 border-round-lg shadow-2">
+
+              <p-table #table [value]="itemsCompra" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
+
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">ID
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">PRODUCTO
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-cost">TAMAÑO
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-cost">FECHA
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cost">TIPO
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">CANTIDAD
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-cost">OPE MONTO
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+                    <th class="col-accio">
+
+
+
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-producto let-i="rowIndex">
+                  <tr>
+                    <td class="col-cli">{{producto.proveedor}}</td>
+                    <td class="col-prod">{{producto.nombre}}</td>
+                    <td class="col-desc">{{producto.descripcion}}</td>
+                    <td class="col-tama">{{producto.tamano}}</td>
+                    <td class="col-cant"></td>
+                    <td class="col-cost"></td>
+                    <td class="col-vent">{{producto.subtotal}}
+                    </td>
+                    <td class="col-accio">
+
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+
+
+            </div>
+          </div>
+          <div class="col-2 hidden lg:block">
+
+          </div>
+        </div>
+
+        <!--grid-->
+      </div>
+
+    </div>
+
+   </div>
+
+
+ </p-card>

@@ -1,82 +1,257 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Venta</ng-template>
-  <ng-template pTemplate="content">
-    <p-toast></p-toast>
+  <div class="flex grid">
 
-    <div class="p-datatable-header">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            placeholder="Búsqueda"
-            class="p-inputtext p-component p-element w-full"
-            [(ngModel)]="globalFilter"
-            (ngModelChange)="applyGlobalFilter()">
-        </span>
+    <!-- Sidebar - 20% en desktop, 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'VENTAS'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+          <moduleBoxLinks [title]="'VENTAS'"></moduleBoxLinks>
+        </div>
+        <div class="col-12">
 
-        <button pButton icon="pi pi-user-plus" label="Nuevo Venta"
-                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
-        </button>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+          <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12">
+          <!-- Crear Nuevo -->
+          <div class="flex flex-column align-items-center" style="gap: 8px;">
+            <!-- Botón circular grande con ícono "+" -->
+             <!--
+             <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-rounded p-button-lg custom-circle-button"
+            ></button>-->
+
+            <!-- Label descriptivo -->
+            <!--<span class="text-lg font-medium">Generar Venta</span>-->
+          </div>
+        </div>
       </div>
     </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <!-- Primera fila: Dropdowns principales -->
+          <div class="col-12 md:col-6 lg:col-5">
 
-    <p-table #table [value]="filteredVentas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
-             [globalFilterFields]="['fecha','total','cliente_id','usuario_id']" [responsiveLayout]="'scroll'">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="id">ID
-            <p-sortIcon field="id"></p-sortIcon>
-          </th>
-          <th pSortableColumn="fecha">Fecha
-            <p-sortIcon field="fecha"></p-sortIcon>
-          </th>
-          <th pSortableColumn="total">Total
-            <p-sortIcon field="total"></p-sortIcon>
-          </th>
-          <th pSortableColumn="cliente_id">Cliente_id
-            <p-sortIcon field="cliente_id"></p-sortIcon>
-          </th>
-          <th pSortableColumn="usuario_id">Usuario_id
-            <p-sortIcon field="usuario_id"></p-sortIcon>
-          </th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <p-dropdown
+                id="busqueda_producto"
+                [options]="selected_producto"
+                class="busqueda"
+                formControlName="busqueda_producto"
+                optionLabel="label"
+                optionValue="value"
+                placeholder="Buscar Producto"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="onAddProductToSale($event)"
+              >
+              </p-dropdown>
+            </span>
 
-      <ng-template pTemplate="body" let-venta let-i="rowIndex">
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{
-              venta.fecha
-                | date: 'yyyy-MM-dd'
-            }}
-          </td>
-          <td>{{
-              venta.total
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
 
-            }}
-          </td>
-          <td>{{
-              venta.cliente_nombre
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-barcode"></i>
+              <input
+                pInputText
+                type="text"
+                placeholder="Buscar Barcode"
+                class="w-full"
+                [(ngModel)]="globalFilter"
+                (ngModelChange)="applyGlobalFilter()">
+            </span>
 
-            }}
-          </td>
-          <td>{{
-              venta.usuario_nombre
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="mixto_id"
+              [options]="selected_mascota"
+              formControlName="mixto_id"
+              optionLabel="label"
 
-            }}
-          </td>
-          <td>
-            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning"
-                    (click)="openModal('Editar', venta)"></button>
-            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
-                    (click)="confirmarEliminacion(venta)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+              placeholder="Asignar PET"
+              [style]="{'width':'100%'}"
+              [filter]="true"
+              filterBy="label"
+              [virtualScroll]="true"
+              [virtualScrollItemSize]="34"
+              [scrollHeight]="'300px'"
+              [showClear]="true"
+              (onChange)="onAddMascotaToSale($event)"
+            >
+            </p-dropdown>
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+
+          </div>
+
+          <div class="col-6 md:col-6 lg:col-2">
+
+          </div>
+          <div class="col-12 md:col-12 lg:col-12">
+             <span>Total de Nueva venta <strong>S/. {{ ventaNuevaMonto }}</strong> </span>
+          </div>
+        </div>
+      </div>
+
+
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12  lg:block">
+
+            <div class="surface-card p-2 border-round-lg shadow-2">
+
+              <p-table #table [value]="itemsVenta" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
+                       [(selection)]="selected_checkbox_producto"
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">CLIENTE
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">PRODUCTO
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-desc">DESCRIPCION
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-tama">TAMAÑO
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cant">CANT
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">COST
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-vent">VENTA S/
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+                    <th class="col-accio">
+                      <p-tableHeaderCheckbox (click)="onCheckboxTogglex()"></p-tableHeaderCheckbox>
+
+                      <button pButton icon="pi pi-user-plus" label="Vender"
+                              style="margin-left: 50px;"
+                              class="p-button-sm p-button-outlined" (click)="openModalPago('Nuevo')"
+                              [disabled]="pet_asignado === 'Sin asignar'"
+                      >
+                      </button>
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-producto let-i="rowIndex">
+                  <tr>
+                    <td class="col-cli">{{producto.mascota}}</td>
+                    <td class="col-prod">{{producto.nombre}}</td>
+                    <td class="col-desc">{{producto.descripcion}}</td>
+                    <td class="col-tama">{{producto.tamano}}</td>
+                    <td class="col-cant"><input pInputText  [(ngModel)]="producto.stock"  class="col-12"  style="font-size: 12px;" (input)="onUpdateProductToSaleQuantity(producto,i)"/></td>
+                    <td class="col-cost"><input pInputText [(ngModel)]="producto.precio_venta" class="col-12" style="font-size: 12px;" (input)="onUpdateProductToSalePrice(producto,i)"/></td>
+                    <td class="col-vent">{{producto.subtotal}}
+                    </td>
+                    <td class="col-accio">
+                      <p-tableCheckbox
+                        [value]="producto"
+                        (click)="onCheckboxTogglex()"
+                        ></p-tableCheckbox>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+              <h2>Historial de Ventas</h2>
+              <p-table  [value]="historial_ventas" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">CLIENTE
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">PRODUCTO
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-desc">DESCRIPCION
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-tama">TAMAÑO
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cant">CANT
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">COST
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-vent">VENTA S/
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-historial_venta let-i="rowIndex" >
+                  <tr>
+                    <td class="col-cli">{{historial_venta.cliente}}</td>
+                    <td class="col-prod">{{historial_venta.producto}}</td>
+                    <td class="col-desc">{{historial_venta.descripcion}}</td>
+                    <td class="col-tama">{{historial_venta.tamano}}</td>
+                    <td class="col-cant">{{historial_venta.cantidad}}</td>
+                    <td class="col-cost">{{historial_venta.precio}}</td>
+                    <td class="col-vent">{{historial_venta.venta_total}}
+                    </td>
+
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+
+        </div>
+
+        <!--grid-->
+      </div>
+
+    </div>
+
+    <p-toast></p-toast>
     <!-- Confirmation -->
     <p-confirmDialog></p-confirmDialog>
     <!-- Confirmation -->
@@ -147,5 +322,175 @@
       </form>
     </p-dialog>
     <!-- Modal -->
-  </ng-template>
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalPagoVisible" [header]="modalPagoTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+       <div id="modal_pago" class="grid">
+         <div class="col-12 md:col-3 lg:col-5">
+           <div class="grid">
+             <div class="col-12">
+               <div class="col-12">
+                 <label><strong>Tipo</strong> </label>
+                 <p-dropdown
+                   id="tipo_pago"
+                   [options]="selected_tipo_pago"
+                   formControlName="tipo_pago"
+                   optionLabel="label"
+                   placeholder="Tipo Pago"
+                   class="modalPago"
+                   [style]="{'width':'100%'}"
+                   [filter]="true"
+                   filterBy="label"
+                   [virtualScroll]="true"
+                   [virtualScrollItemSize]="34"
+                   [scrollHeight]="'300px'"
+                   [showClear]="true"
+                   (onChange)="onTipoPagoChange($event)"
+                 >
+                 </p-dropdown>
+               </div>
+               <div class="col-12">
+                 <label><strong> Fecha de Pago</strong> </label>
+                 <p-calendar
+                   placeholder="  /  / "
+                   [(ngModel)]="fechaPago"
+                   dateFormat="dd/mm/yy"
+                   [showIcon]="true"
+                 >
+                 </p-calendar>
+               </div>
+             </div>
+           </div>
+         </div>
+         <div class="col-12 md:col-9 lg:col-7">
+           <div class="grid">
+             <div class="lg:col-5">
+               <div class="col-12">
+                 <label><strong> Importe Mensual</strong> </label>
+                 <input pInputText id="importeMensual" [(ngModel)]="importeMensual"  [disabled]="importeMensual === 0" />
+
+               </div>
+               <div class="col-12">
+                 <label><strong> Nro Cuotas</strong> </label>
+                 <input pInputText id="nro_cuotas" [(ngModel)]="nro_cuotas"  (input)="calcularPagosCuotas()"  />
+               </div>
+
+             </div>
+             <div class="lg:col-7">
+               <div class="col-12">
+                   <label><strong> Simulador</strong> </label>
+                 <div [innerHTML]="listaHTML"></div>
+               </div>
+             </div>
+           </div>
+         </div>
+         <div class="col-3">
+           <div class="col-12">
+             <label><strong> Imp.Total</strong> </label>
+             <input pInputText id="importeTotal" [(ngModel)]="importeTotal"   />
+           </div>
+         </div>
+         <div class="col-6">
+           <div class="col-12">
+             <label><strong> Imp. Total Pagado</strong> </label>
+             <input pInputText id="importeTotalPagado" [(ngModel)]="importeTotalPagado"  (input)="calcularVuelto()"  />
+           </div>
+         </div>
+         <div class="col-3">
+           <div class="col-12">
+             <label><strong> Vuelto</strong> </label>
+             <input pInputText id="vueltoPagado" [(ngModel)]="vueltoPagado"   />
+           </div>
+         </div>
+       </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text buttonBorder" (click)="modalPagoVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text buttonBorder" (click)="registarVentaPago()"
+                  [disabled]="importeTotalPagado < importeMensual"
+          ></button>
+        </div>
+
+    </p-dialog>
+    <!-- Modal -->
+  </div>
+
+
+<!--  <ng-template pTemplate="title">Lista de Venta</ng-template>
+  <ng-template pTemplate="content">
+
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Venta"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredVentas" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['fecha','total','cliente_id','usuario_id']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID
+            <p-sortIcon field="id"></p-sortIcon>
+          </th>
+          <th pSortableColumn="fecha">Fecha
+            <p-sortIcon field="fecha"></p-sortIcon>
+          </th>
+          <th pSortableColumn="total">Total
+            <p-sortIcon field="total"></p-sortIcon>
+          </th>
+          <th pSortableColumn="cliente_id">Cliente_id
+            <p-sortIcon field="cliente_id"></p-sortIcon>
+          </th>
+          <th pSortableColumn="usuario_id">Usuario_id
+            <p-sortIcon field="usuario_id"></p-sortIcon>
+          </th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-producto let-i="rowIndex">
+        <tr>
+          <td>Sin Asignar</td>
+          <td>{{
+              producto.nombre
+            }}
+          </td>
+          <td>{{
+              producto.stock
+
+            }}
+          </td>
+          <td>{{
+              producto.cliente_nombre
+
+            }}
+          </td>
+          <td>{{
+              producto.usuario_nombre
+
+            }}
+          </td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning"
+                    (click)="openModal('Editar', producto)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger"
+                    (click)="confirmarEliminacion(producto)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </ng-template>-->
 </p-card>

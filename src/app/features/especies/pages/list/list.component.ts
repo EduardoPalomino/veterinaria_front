@@ -17,8 +17,8 @@ export class EspecieListComponent implements OnInit {
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
-  
-  
+
+
   especieForm: FormGroup;
   mode:string='';
 
@@ -27,7 +27,7 @@ export class EspecieListComponent implements OnInit {
   private especieService: EspecieService,
   private confirmationService: ConfirmationService,
   private messageService: MessageService
-  
+
   ) {
     this.especieForm = this.fb.group({
       _id: [null],
@@ -36,18 +36,14 @@ export class EspecieListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     
+
     this.loadEspecies();
   }
 
   loadEspecies() {
     this.especieService.getAll().subscribe({
       next: (data) => {
-        this.especies = data.map(especie=>({
-          ...especie,
-          
-        }));
-        this.filteredEspecies = [...this.especies];
+        this.especies = data;
       },
       error: (err) => {
         console.error('Error al cargar Especies:', err);
@@ -157,7 +153,7 @@ deleteEspecie(especie: Especie) {
     }
   }
 
-  
+
 
   mensajeConfirmacion(especie: Especie,mensaje:String){
     this.messageService.add({

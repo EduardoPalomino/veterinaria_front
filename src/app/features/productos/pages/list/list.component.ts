@@ -14,25 +14,52 @@ import { Proveedor } from '../../../proveedors/interfaces/proveedor.interface';
   providers: [ConfirmationService, MessageService]
 })
 export class ProductoListComponent implements OnInit {
+  // Propiedades del componente
   productos: Producto[] = [];
+  producto: Producto={
+    _id: '',
+    nombre: '',
+    foto: '',
+    categoria_producto_id: '',
+    tamano: '',
+    precio_venta: '',
+    stock: '',
+    descripcion: '',
+    proveedor_id: '',
+    created_at: '',
+    updated_at: ''
+  };
   filteredProductos: Producto[] = [];
+  filteredProducts: Producto[] = [];
   globalFilter: string = '';
   modalVisible: boolean = false;
   modalTitle: string = '';
-  categoria_productos: Categoria_producto[]= [];
-  proveedors: Proveedor[]= [];
-  selected_categoria_producto:{ label: string; value: string }[]=[];
-  selected_proveedor:{ label: string; value: string }[]=[];
-  productoForm: FormGroup;
-  mode:string='';
+  mode: string = '';
 
+  categoria_productos: Categoria_producto[] = [];
+  proveedors: Proveedor[] = [];
+
+  selected_categoria_producto: { label: string; value: string }[] = [];
+  selected_proveedor: { label: string; value: string }[] = [];
+  selected_producto: { label: string; value: string }[] = [];
+
+  productoForm: FormGroup;
+  //Grid
+  productoGrid: any = {
+    _id:'',
+    nombre: '',
+    categoria: '',
+    tamano: '',
+    precio_venta: '',
+    stock: ''
+  };
   constructor(
-  private fb: FormBuilder,
-  private productoService: ProductoService,
-  private confirmationService: ConfirmationService,
-  private messageService: MessageService,
-  private categoria_productoService:Categoria_productoService,
-  private proveedorService:ProveedorService
+    private fb: FormBuilder,
+    private productoService: ProductoService,
+    private confirmationService: ConfirmationService,
+    private messageService: MessageService,
+    private categoria_productoService: Categoria_productoService,
+    private proveedorService: ProveedorService
   ) {
     this.productoForm = this.fb.group({
       _id: [null],
@@ -47,20 +74,27 @@ export class ProductoListComponent implements OnInit {
   }
 
   ngOnInit(): void {
-     this.loadCategoria_productos();
-this.loadProveedors();
+    this.loadCategoria_productos();
+    this.loadProveedors();
     this.loadProductos();
   }
 
+  // Métodos de carga de datos
   loadProductos() {
     this.productoService.getAll().subscribe({
       next: (data) => {
-        this.productos = data.map(producto=>({
+        this.productos = data.map(producto => ({
           ...producto,
-          categoria_producto_nombre:this.categoria_productos.find(categoria_producto=>categoria_producto._id==producto.categoria_producto_id)?.descripcion||'Sin Categoria_producto',
-      proveedor_nombre:this.proveedors.find(proveedor=>proveedor._id==producto.proveedor_id)?.nombre||'Sin Proveedor'
+          categoria_producto_nombre: this.categoria_productos.find(categoria_producto => categoria_producto._id == producto.categoria_producto_id)?.descripcion || 'Sin Categoria_producto',
+          proveedor_nombre: this.proveedors.find(proveedor => proveedor._id == producto.proveedor_id)?.nombre || 'Sin Proveedor'
         }));
         this.filteredProductos = [...this.productos];
+
+        this.selected_producto = data.map(p => ({
+          label: p.nombre,
+          value: p._id
+        }));
+
       },
       error: (err) => {
         console.error('Error al cargar Productos:', err);
@@ -68,7 +102,7 @@ this.loadProveedors();
     });
   }
 
-loadCategoria_productos() {
+  loadCategoria_productos() {
     this.categoria_productoService.getAll().subscribe({
       next: (data) => {
         this.categoria_productos = data;
@@ -82,7 +116,7 @@ loadCategoria_productos() {
       }
     });
   }
-      loadProveedors() {
+  loadProveedors() {
     this.proveedorService.getAll().subscribe({
       next: (data) => {
         this.proveedors = data;
@@ -96,7 +130,31 @@ loadCategoria_productos() {
       }
     });
   }
+  //change
+  onAddProductoTGrid($event:any){
+    let producto_id= $event.value.value;
+    this.producto = this.findProducto(producto_id);
+    let productoCategoria = this.findCategoria(this.producto.categoria_producto_id);
+    this.productoGrid={
+        _id:this.producto._id,
+        nombre: this.producto.nombre,
+        categoria: productoCategoria.nombre,
+        tamano: this.producto.tamano,
+        precio: this.producto.precio_venta,
+        stock: this.producto.stock
+    };
+    console.log(producto_id)
+   console.log(JSON.stringify(this.productoGrid))
+  }
 
+  //find
+  private findProducto(producto_id: string): any{
+    return this.productos.find(p => p._id === producto_id);
+  }
+  private findCategoria(categoria_id: string): any{
+    return this.categoria_productos.find(c => c._id === categoria_id);
+  }
+  // Métodos de filtrado
   applyGlobalFilter() {
     const filterValue = this.globalFilter.toLowerCase().trim();
     console.log('Filtrando:', filterValue);
@@ -107,36 +165,85 @@ loadCategoria_productos() {
     }
 
     this.filteredProductos = this.productos.filter((producto) =>
-        Object.values(producto).some(
-            (value) =>
-                value &&
-                value.toString().toLowerCase().includes(filterValue)
-        )
+      Object.values(producto).some(
+        (value) =>
+          value &&
+          value.toString().toLowerCase().includes(filterValue)
+      )
     );
   }
 
+  filterProducts(event: any) {
+    const query = event.query.toLowerCase();
+    this.filteredProducts = this.productos.filter(producto =>
+      producto.nombre.toLowerCase().includes(query) ||
+      producto.descripcion.toLowerCase().includes(query)
+    );
+  }
+
+  // Métodos del modal y formulario
   openModal(mode: 'Nuevo' | 'Editar', producto?: Producto) {
-    this.mode=mode;
+    this.mode = mode;
     console.log(mode);
     this.modalTitle = `${mode} Producto`;
     this.modalVisible = true;
 
     if (mode === 'Editar' && producto) {
       this.productoForm.patchValue({
-       _id: producto._id,
-      nombre: producto.nombre,
-      categoria_producto_id: producto.categoria_producto_id,
-      tamano: producto.tamano,
-      precio_venta: producto.precio_venta,
-      stock: producto.stock,
-      descripcion: producto.descripcion,
-      proveedor_id: producto.proveedor_id
+        _id: producto._id,
+        nombre: producto.nombre,
+        categoria_producto_id: producto.categoria_producto_id,
+        tamano: producto.tamano,
+        precio_venta: producto.precio_venta,
+        stock: producto.stock,
+        descripcion: producto.descripcion,
+        proveedor_id: producto.proveedor_id
       });
     } else {
       this.productoForm.reset();
     }
   }
 
+  saveRegistro() {
+    if (this.productoForm.valid) {
+      const producto = this.productoForm.value;
+
+      console.log(JSON.stringify(producto));
+      producto._id === null && delete producto._id;
+      console.log(JSON.stringify(producto));
+
+      if (this.mode === 'Nuevo') {
+        this.productoService.create(producto).subscribe({
+          next: (data) => {
+            console.log('Producto guardado con éxito:', data);
+            this.productos.push(data);
+            this.modalVisible = false;
+            this.loadProductos();
+            this.mensajeConfirmacion(producto, "Registro Actualizado");
+          },
+          error: (err) => {
+            console.error('Error al guardar el producto:', err);
+          }
+        });
+      } else {
+        this.productoService.update(producto._id, producto).subscribe(() => {
+          this.modalVisible = false;
+          this.loadProductos();
+          this.mensajeConfirmacion(producto, "Registro Actualizado");
+        });
+      }
+    }
+  }
+
+  // Métodos de selección
+  onChangeCategoria_producto(e: any) {
+    this.productoForm.patchValue({ categoria_producto_id: e.value });
+  }
+
+  onChangeProveedor(e: any) {
+    this.productoForm.patchValue({ proveedor_id: e.value });
+  }
+  // Métodos de eliminación
   confirmarEliminacion(producto: Producto) {
     console.log("Clic en eliminar:", producto);
     this.confirmationService.confirm({
@@ -151,7 +258,7 @@ loadCategoria_productos() {
     });
   }
 
-deleteProducto(producto: Producto) {
+  deleteProducto(producto: Producto) {
     this.productoService.delete(producto._id).subscribe({
       next: () => {
         this.loadProductos();
@@ -172,52 +279,12 @@ deleteProducto(producto: Producto) {
     });
   }
 
-  saveRegistro() {
-    if (this.productoForm.valid) { // Verifica que el formulario sea válido
-      const producto = this.productoForm.value; // Obtener valores del formulario
-
-      console.log(JSON.stringify(producto));
-      producto._id === null && delete producto._id;
-      console.log(JSON.stringify(producto));
-
-      if (this.mode === 'Nuevo') {
-        this.productoService.create(producto).subscribe({
-          next: (data) => {
-            console.log('Producto guardado con éxito:', data);
-            this.productos.push(data); // Agregar el nuevo producto a la lista
-            this.modalVisible = false; // Cerrar modal después de guardar
-            this.loadProductos(); // Recargar lista de productos
-            this.mensajeConfirmacion(producto,"Registro Actualizado");
-          },
-          error: (err) => {
-            console.error('Error al guardar el producto:', err);
-          }
-        });
-      }else{
-        this.productoService.update(producto._id, producto).subscribe(() => {
-          this.modalVisible = false;
-          this.loadProductos();
-          this.mensajeConfirmacion(producto,"Registro Actualizado");
-        });
-      }
-    }
-  }
-
-  onChangeCategoria_producto(e: any) {
-        this.productoForm.patchValue({categoria_producto_id:e.value});
-       }
-      onChangeProveedor(e: any) {
-        this.productoForm.patchValue({proveedor_id:e.value});
-       }
-
-  mensajeConfirmacion(producto: Producto,mensaje:String){
+  // Métodos auxiliares
+  mensajeConfirmacion(producto: Producto, mensaje: String) {
     this.messageService.add({
       severity: 'success',
       summary: 'Éxito',
       detail: ` Producto "${producto.nombre}" ${mensaje}`
     });
   }
-
-
-
 }

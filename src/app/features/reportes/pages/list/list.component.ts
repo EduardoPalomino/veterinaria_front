@@ -21,6 +21,8 @@ export class ReporteListComponent implements OnInit {
   selected_usuario:{ label: string; value: string }[]=[];
   reporteForm: FormGroup;
   mode:string='';
+  data: any;
+  options: any;
 
   constructor(
   private fb: FormBuilder,
@@ -40,7 +42,8 @@ export class ReporteListComponent implements OnInit {
 
   ngOnInit(): void {
      this.loadUsuarios();
-    this.loadReportes();
+      this.loadReportes();
+     this.initChart();
   }
 
   loadReportes() {
@@ -57,8 +60,7 @@ export class ReporteListComponent implements OnInit {
       }
     });
   }
-
-loadUsuarios() {
+  loadUsuarios() {
     this.usuarioService.getAll().subscribe({
       next: (data) => {
         this.usuarios = data;
@@ -72,7 +74,6 @@ loadUsuarios() {
       }
     });
   }
-
   applyGlobalFilter() {
     const filterValue = this.globalFilter.toLowerCase().trim();
     console.log('Filtrando:', filterValue);
@@ -90,41 +91,7 @@ loadUsuarios() {
         )
     );
   }
-
-  openModal(mode: 'Nuevo' | 'Editar', reporte?: Reporte) {
-    this.mode=mode;
-    console.log(mode);
-    this.modalTitle = `${mode} Reporte`;
-    this.modalVisible = true;
-
-    if (mode === 'Editar' && reporte) {
-      this.reporteForm.patchValue({
-       _id: reporte._id,
-      tipo_reporte: reporte.tipo_reporte,
-      fecha_generado: reporte.fecha_generado,
-      contenido: reporte.contenido,
-      usuario_id: reporte.usuario_id
-      });
-    } else {
-      this.reporteForm.reset();
-    }
-  }
-
-  confirmarEliminacion(reporte: Reporte) {
-    console.log("Clic en eliminar:", reporte);
-    this.confirmationService.confirm({
-      message: `¿Estás seguro de eliminar el Reporte: ${reporte.tipo_reporte}?`,
-      header: 'Confirmación',
-      icon: 'pi pi-exclamation-triangle',
-      acceptLabel: 'Sí',
-      rejectLabel: 'No',
-      accept: () => {
-        this.deleteReporte(reporte);
-      }
-    });
-  }
-
-deleteReporte(reporte: Reporte) {
+  deleteReporte(reporte: Reporte) {
     this.reporteService.delete(reporte._id).subscribe({
       next: () => {
         this.loadReportes();
@@ -144,48 +111,60 @@ deleteReporte(reporte: Reporte) {
       }
     });
   }
+  initChart() {
 
-  saveRegistro() {
-    if (this.reporteForm.valid) { // Verifica que el formulario sea válido
-      const reporte = this.reporteForm.value; // Obtener valores del formulario
+      const documentStyle = getComputedStyle(document.documentElement);
+      const textColor = documentStyle.getPropertyValue('--p-text-color');
+      const textColorSecondary = documentStyle.getPropertyValue('--p-text-muted-color');
+      const surfaceBorder = documentStyle.getPropertyValue('--p-content-border-color');
 
-      console.log(JSON.stringify(reporte));
-      reporte._id === null && delete reporte._id;
-      console.log(JSON.stringify(reporte));
-
-      if (this.mode === 'Nuevo') {
-        this.reporteService.create(reporte).subscribe({
-          next: (data) => {
-            console.log('Reporte guardado con éxito:', data);
-            this.reportes.push(data); // Agregar el nuevo reporte a la lista
-            this.modalVisible = false; // Cerrar modal después de guardar
-            this.loadReportes(); // Recargar lista de reportes
-            this.mensajeConfirmacion(reporte,"Registro Actualizado");
-          },
-          error: (err) => {
-            console.error('Error al guardar el reporte:', err);
+      this.data = {
+        labels: ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'],
+        datasets: [
+          {
+            label: 'Ventas',
+            backgroundColor: documentStyle.getPropertyValue('--p-purple-500'),
+            borderColor: documentStyle.getPropertyValue('--p-purple-500'),
+            data: [65, 59, 80, 81, 56, 55, 40, 50, 45, 70, 85, 90]
           }
-        });
-      }else{
-        this.reporteService.update(reporte._id, reporte).subscribe(() => {
-          this.modalVisible = false;
-          this.loadReportes();
-          this.mensajeConfirmacion(reporte,"Registro Actualizado");
-        });
-      }
-    }
-  }
+        ]
+      };
 
-  onChangeUsuario(e: any) {
-        this.reporteForm.patchValue({usuario_id:e.value});
-       }
+      this.options = {
+        maintainAspectRatio: false,
+        aspectRatio: 0.8,
+        plugins: {
+          legend: {
+            labels: {
+              color: textColor
+            }
+          }
+        },
+        scales: {
+          x: {
+            ticks: {
+              color: textColorSecondary,
+              font: {
+                weight: 500
+              }
+            },
+            grid: {
+              color: surfaceBorder,
+              drawBorder: false
+            }
+          },
+          y: {
+            ticks: {
+              color: textColorSecondary
+            },
+            grid: {
+              color: surfaceBorder,
+              drawBorder: false
+            }
+          }
+        }
+      };
 
-  mensajeConfirmacion(reporte: Reporte,mensaje:String){
-    this.messageService.add({
-      severity: 'success',
-      summary: 'Éxito',
-      detail: ` Reporte "${reporte.tipo_reporte}" ${mensaje}`
-    });
   }
 
 

@@ -1,146 +1,319 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Proveedor</ng-template>
-  <ng-template pTemplate="content">
-    <p-toast></p-toast>
+  <div class="flex grid">
 
-    <div class="p-datatable-header">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            placeholder="Búsqueda"
-            class="p-inputtext p-component p-element w-full"
-            [(ngModel)]="globalFilter"
-            (ngModelChange)="applyGlobalFilter()">
-        </span>
+    <!-- Sidebar - 20% en desktop, 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100" >
+      <div class="grid flex">
+        <div class="col-12">
+          <!-- Titulo -->
+          <moduleBoxTitle [title]="'PROVEEDORES'"></moduleBoxTitle>
+        </div>
+        <div class="col-12">
+          <!-- Botones -->
+         <!-- <moduleBoxLinks [title]="'PROVEEDORES'"></moduleBoxLinks>-->
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+         <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12">
+          <!-- Crear Nuevo -->
+          <div class="flex flex-column align-items-center" style="gap: 8px;">
+            <!-- Botón circular grande con ícono "+" -->
+            <button
+              pButton
+              type="button"
+              icon="pi pi-plus"
+              class="p-button-rounded p-button-lg custom-circle-button"
+              (click)="openModal('Nuevo')"
+            ></button>
+            <!-- Label descriptivo -->
+            <div type="button" class="text-lg font-medium"
+                 (click)="openModal('Nuevo')" style="cursor:pointer;">Generar proveedor
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <div class="grid">
+          <!-- Primera fila: Dropdowns principales -->
+          <!--
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="categoria_id"
+              formControlName="categoria_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Categoría"
+              [style]="{'width':'100%'}"
+            >
+            </p-dropdown>
+          </div>
+          <div class="col-12 md:col-6 lg:col-3">
+            <p-dropdown
+              id="mixto_id"
+              formControlName="mixto_id"
+              optionLabel="label"
+              optionValue="value"
+              placeholder="Ventas,Productos,Precios"
+              [style]="{'width':'100%'}"
+            >
+            </p-dropdown>
+          </div>
+          -->
+          <div class="col-12 md:col-12 lg:col-4">
 
-        <button pButton icon="pi pi-user-plus" label="Nuevo Proveedor"
-                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
-        </button>
+            <span class="p-input-icon-left w-full">
+              <i class="pi pi-search"></i>
+              <p-dropdown
+                id="busqueda_producto"
+                [options]="selected_proveedor"
+                class="busqueda"
+                formControlName="busqueda_cliente"
+                optionLabel="label"
+                placeholder="Buscar Cliente(Nombre Dueño)"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="onAddProveedorTGrid($event)"
+              >
+              </p-dropdown>
+            </span>
+
+          </div>
+
+         <!--
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Inicio"
+              formControlName="fechaInicio"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+            >
+            </p-calendar>
+          </div>
+          <div class="col-6 md:col-6 lg:col-2">
+            <p-calendar
+              placeholder="Fin"
+              formControlName="fechaFin"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+
+            >
+            </p-calendar>
+          </div>
+          -->
+
+
+        </div>
+      </div>
+
+
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ============================================= -->
+          <!-- VERSIÓN MOBILE (iPhone) - 1 COLUMNA VERTICAL -->
+          <!-- ============================================= -->
+          <div class="col-12 md:col-4 lg:col-4">
+            <!-- Registro 1 -->
+            <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
+              <table class="w-full tabla-grid-ui">
+                <thead>
+                <tr class="border-bottom-1 surface-border">
+                  <th class="text-left p-2 ">Proveedor</th>
+                  <th class="text-left p-2 ">Detalle</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.nombre }}
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning btn-right" (click)="openModal('Editar', proveedor)"></button>
+                  </td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Ruc : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.ruc }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Teléfono : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.telefono }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Email : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.email }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Dirección : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.direccion }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Contacto : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.contacto }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Observaciones : </strong></td>
+                  <td class="p-2 pt-0 pb-0">{{ proveedorGrid.observaciones }}</td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0"><strong>Activo : </strong></td>
+                  <td class="p-2 pt-0 pb-0"><p-radioButton
+                    name="groupname"
+                    value="Option1"
+                    inputId="opt1">
+                  </p-radioButton></td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+            <!-- Registro 1 -->
+          </div>
+          <!-- ========================================== -->
+          <!-- VERSIÓN TABLET - 3 COLUMNAS EN HORIZONTAL -->
+          <!-- ========================================== -->
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+        </div>
+        <!--grid-->
       </div>
     </div>
 
-    <p-table #table [value]="filteredProveedors" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
-             [globalFilterFields]="['nombre','ruc','telefono','email','direccion','contacto','observaciones']" [responsiveLayout]="'scroll'">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
-          <th pSortableColumn="ruc">Ruc <p-sortIcon field="ruc"></p-sortIcon></th>
-          <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
-          <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
-          <th pSortableColumn="direccion">Direccion <p-sortIcon field="direccion"></p-sortIcon></th>
-          <th pSortableColumn="contacto">Contacto <p-sortIcon field="contacto"></p-sortIcon></th>
-          <th pSortableColumn="observaciones">Observaciones <p-sortIcon field="observaciones"></p-sortIcon></th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-proveedor let-i="rowIndex">
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{ proveedor.nombre
-      
-      }}</td>
-          <td>{{ proveedor.ruc
-      
-      }}</td>
-          <td>{{ proveedor.telefono
-      
-      }}</td>
-          <td>{{ proveedor.email
-      
-      }}</td>
-          <td>{{ proveedor.direccion
-      
-      }}</td>
-          <td>{{ proveedor.contacto
-      
-      }}</td>
-          <td>{{ proveedor.observaciones
-      
-      }}</td>
-          <td>
-            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', proveedor)"></button>
-            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(proveedor)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-    <!-- Confirmation -->
-    <p-confirmDialog></p-confirmDialog>
-    <!-- Confirmation -->
-    <!-- Modal -->
-    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="proveedorForm" >
-        <div class="p-fluid">
-           
-    <div class="p-field">
-      <label>Nombre</label>
-      
-        <input pInputText id="nombreInput" formControlName="nombre" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Ruc</label>
-      
-        <input pInputText id="rucInput" formControlName="ruc" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Telefono</label>
-      
-        <input pInputText id="telefonoInput" formControlName="telefono" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Email</label>
-      
-        <input pInputText id="emailInput" formControlName="email" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Direccion</label>
-      
-        <input pInputText id="direccionInput" formControlName="direccion" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Contacto</label>
-      
-        <input pInputText id="contactoInput" formControlName="contacto" />
-      
-    </div>
-  
-
-    <div class="p-field">
-      <label>Observaciones</label>
-      
-        <input pInputText id="observacionesInput" formControlName="observaciones" />
-      
-    </div>
-  
-          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-           
+  </div>
+  <!-- Confirmation -->
+  <p-confirmDialog></p-confirmDialog>
+  <!-- Confirmation -->
+  <!-- Modal -->
+  <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+    <form [formGroup]="proveedorForm">
+      <div class="p-fluid grid">
+        <div class="p-field col-12">
+          <label>Nombre</label>
+          <input pInputText id="nombreInput" formControlName="nombre"/>
         </div>
-        <div class="p-dialog-footer">
-          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        <div class="p-field col-6">
+          <label>Ruc</label>
+          <input pInputText id="rucInput" formControlName="ruc"/>
         </div>
-      </form>
-    </p-dialog>
-    <!-- Modal -->
-  </ng-template>
+        <div class="p-field  col-6">
+          <label>Teléfono</label>
+          <input pInputText id="telefonoInput" formControlName="telefono"/>
+        </div>
+        <div class="p-field  col-12">
+          <label>Email</label>
+          <input pInputText id="emailInput" formControlName="email"/>
+        </div>
+        <div class="p-field  col-12">
+          <label>Direccion</label>
+          <input pInputText id="direccionInput" formControlName="direccion"/>
+        </div>
+        <div class="p-field  col-12">
+          <label>Contacto</label>
+          <input pInputText id="contactoInput" formControlName="contacto"/>
+        </div>
+        <div class="p-field  col-12">
+          <label>Observaciones</label>
+          <input pInputText id="observacionesInput" formControlName="observaciones"/>
+        </div>
+        <input pInputText id="_idInput" formControlName="_id" [hidden]="true"/>
+      </div>
+      <div class="p-dialog-footer">
+        <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+        <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+      </div>
+    </form>
+  </p-dialog>
+  <!-- Modal -->
+  <p-toast></p-toast>
+
+   <!--
+   <ng-template pTemplate="title">Lista de Proveedor</ng-template>
+    <ng-template pTemplate="content">
+
+
+      <div class="p-datatable-header">
+        <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+          <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+            <i class="pi pi-search"></i>
+            <input
+              pInputText
+              type="text"
+              placeholder="Búsqueda"
+              class="p-inputtext p-component p-element w-full"
+              [(ngModel)]="globalFilter"
+              (ngModelChange)="applyGlobalFilter()">
+          </span>
+
+          <button pButton icon="pi pi-user-plus" label="Nuevo Proveedor"
+                  class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+          </button>
+        </div>
+      </div>
+
+      <p-table #table [value]="filteredProveedors" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+               [globalFilterFields]="['nombre','ruc','telefono','email','direccion','contacto','observaciones']" [responsiveLayout]="'scroll'">
+        <ng-template pTemplate="header">
+          <tr>
+            <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+            <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+            <th pSortableColumn="ruc">Ruc <p-sortIcon field="ruc"></p-sortIcon></th>
+            <th pSortableColumn="telefono">Telefono <p-sortIcon field="telefono"></p-sortIcon></th>
+            <th pSortableColumn="email">Email <p-sortIcon field="email"></p-sortIcon></th>
+            <th pSortableColumn="direccion">Direccion <p-sortIcon field="direccion"></p-sortIcon></th>
+            <th pSortableColumn="contacto">Contacto <p-sortIcon field="contacto"></p-sortIcon></th>
+            <th pSortableColumn="observaciones">Observaciones <p-sortIcon field="observaciones"></p-sortIcon></th>
+            <th>Acciones</th>
+          </tr>
+        </ng-template>
+
+        <ng-template pTemplate="body" let-proveedor let-i="rowIndex">
+          <tr>
+            <td>{{ i + 1 }}</td>
+            <td>{{ proveedor.nombre
+
+        }}</td>
+            <td>{{ proveedor.ruc
+
+        }}</td>
+            <td>{{ proveedor.telefono
+
+        }}</td>
+            <td>{{ proveedor.email
+
+        }}</td>
+            <td>{{ proveedor.direccion
+
+        }}</td>
+            <td>{{ proveedor.contacto
+
+        }}</td>
+            <td>{{ proveedor.observaciones
+
+        }}</td>
+            <td>
+              <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', proveedor)"></button>
+              <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(proveedor)"></button>
+            </td>
+          </tr>
+        </ng-template>
+      </p-table>
+
+    </ng-template>
+    -->
+
 </p-card>

@@ -36,8 +36,12 @@ import { VentasModule } from './features/ventas/ventas.module';
 import { Detalle_ventasModule } from './features/detalle_ventas/detalle_ventas.module';
 import { Historia_clinicasModule } from './features/historia_clinicas/historia_clinicas.module';
 import { ReportesModule } from './features/reportes/reportes.module';
-
+import { DashboardsModule } from './features/dashboards/dashboards.module';
 import {UsuarioListComponent} from "./features/usuarios/pages/list/list.component";
+import {InventariosModule} from "./features/inventarios/inventarios.module";
+import {LoginsModule} from "./features/logins/logins.module";
+import {PagosModule} from "./features/pagos/pagos.module";
+
 @NgModule({
   declarations: [
     AppComponent
@@ -63,6 +67,10 @@ import {UsuarioListComponent} from "./features/usuarios/pages/list/list.componen
     Detalle_ventasModule,
     Historia_clinicasModule,
     ReportesModule,
+    DashboardsModule,
+    InventariosModule,
+    LoginsModule,
+    PagosModule,
     CalendarModule,
     TableModule,
     CardModule,
