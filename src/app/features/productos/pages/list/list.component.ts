@@ -20,6 +20,7 @@ export class ProductoListComponent implements OnInit {
     _id: '',
     nombre: '',
     foto: '',
+    codigo_barras:'',
     categoria_producto_id: '',
     tamano: '',
     precio_venta: '',
@@ -64,6 +65,8 @@ export class ProductoListComponent implements OnInit {
     this.productoForm = this.fb.group({
       _id: [null],
       nombre: ['', Validators.required],
+      foto: [''],
+      codigo_barras: [''],
       categoria_producto_id: ['', Validators.required],
       tamano: ['', Validators.required],
       precio_venta: ['', Validators.required],
@@ -192,6 +195,8 @@ export class ProductoListComponent implements OnInit {
       this.productoForm.patchValue({
         _id: producto._id,
         nombre: producto.nombre,
+        foto: producto.foto,
+        codigo_barras: producto.codigo_barras,
         categoria_producto_id: producto.categoria_producto_id,
         tamano: producto.tamano,
         precio_venta: producto.precio_venta,

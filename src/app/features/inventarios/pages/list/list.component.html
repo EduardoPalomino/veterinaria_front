@@ -81,7 +81,7 @@
 
             <div class="surface-card p-2 border-round-lg shadow-2">
 
-              <p-table #table [value]="itemsCompra" [paginator]="false" [rows]="10"
+              <p-table #table [value]="itemsKardex" [paginator]="false" [rows]="10"
                        [rowsPerPageOptions]="[10, 20, 50, 100]"
                        [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
                        [responsiveLayout]="'scroll'"
@@ -121,13 +121,13 @@
 
                 <ng-template pTemplate="body" let-producto let-i="rowIndex">
                   <tr>
-                    <td class="col-cli">{{producto.proveedor}}</td>
-                    <td class="col-prod">{{producto.nombre}}</td>
-                    <td class="col-desc">{{producto.descripcion}}</td>
-                    <td class="col-tama">{{producto.tamano}}</td>
-                    <td class="col-cant"></td>
-                    <td class="col-cost"></td>
-                    <td class="col-vent">{{producto.subtotal}}
+                    <td class="col-cli">{{i+1}}</td>
+                    <td class="col-prod">{{producto.producto}}</td>
+                    <td class="col-desc">{{producto.tamano}}</td>
+                    <td class="col-tama">{{producto.fecha | date:'dd/MM/yyyy' }}</td>
+                    <td class="col-cant">{{producto.tipo}}</td>
+                    <td class="col-cost">{{producto.cantidad}}</td>
+                    <td class="col-vent">{{producto.ope_monto}}
                     </td>
                     <td class="col-accio">
 

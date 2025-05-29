@@ -4,6 +4,7 @@ export class ProductoModel implements Producto {
   _id = '';
   nombre = '';
   foto = '';
+  codigo_barras= '';
   categoria_producto_id = '';
   tamano = '';
   precio_venta = '';

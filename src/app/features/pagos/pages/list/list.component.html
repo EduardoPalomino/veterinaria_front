@@ -1,70 +1,174 @@
 <p-card>
-  <ng-template pTemplate="title">Lista de Pago</ng-template>
-  <ng-template pTemplate="content">
-    <p-toast></p-toast>
-
-    <div class="p-datatable-header">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            placeholder="Búsqueda"
-            class="p-inputtext p-component p-element w-full"
-            [(ngModel)]="globalFilter"
-            (ngModelChange)="applyGlobalFilter()">
-        </span>
-
-        <button pButton icon="pi pi-user-plus" label="Nuevo Pago"
-                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
-        </button>
+  <!-- PAGOS-->
+  <div class="flex grid">
+    <!--Sidebar - 20% en desktop, 100% en móvil-->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100">
+      <div class="grid flex">
+        <div class="col-12">
+          <moduleBoxTitle [title]="'PAGOS'"></moduleBoxTitle>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+          <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
       </div>
     </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <form [formGroup]="pagoForm">
+        <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+          <div class="grid">
+            <div class="col-12 md:col-6 lg:col-4">
+               <span class="p-input-icon-left w-full">
+                  <i class="pi pi-search"></i>
+                  <p-dropdown
+                    id="busqueda_cliente"
+                    [options]="selected_cliente"
+                    class="busqueda"
+                    formControlName="busqueda_cliente"
+                    optionLabel="label"
+                    optionValue="label"
+                    placeholder="Buscar Cliente"
+                    [style]="{'width':'100%'}"
+                    [filter]="true"
+                    filterBy="label"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="34"
+                    [scrollHeight]="'300px'"
+                    [showClear]="true"
+                    (onChange)="filtarCliente($event)"
+                  >
+                  </p-dropdown>
+              </span>
+            </div>
+            <div class="col-12 md:col-6 lg:col-4">
+               <span class="p-input-icon-left w-full">
+                  <i class="pi pi-search"></i>
+                  <p-dropdown
+                    id="busqueda_mascota"
+                    [options]="selected_mascota"
+                    class="busqueda"
+                    formControlName="busqueda_mascota"
+                    optionLabel="label"
+                    optionValue="label"
+                    placeholder="Buscar Mascota"
+                    [style]="{'width':'100%'}"
+                    [filter]="true"
+                    filterBy="label"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="34"
+                    [scrollHeight]="'300px'"
+                    [showClear]="true"
+                    (onChange)="filtarMascota($event)"
+                  >
+                  </p-dropdown>
+              </span>
+            </div>
+            <div class="col-6 md:col-6 lg:col-2">
+              <p-calendar
+                placeholder="Inicio"
+                formControlName="fInicio"
+                dateFormat="dd/mm/yy"
+                [showIcon]="true"
+                [showButtonBar]="true"
+                (onSelect)="filtarFechaVencimiento($event,1)"
+              >
+              </p-calendar>
+            </div>
+            <div class="col-6 md:col-6 lg:col-2" >
+              <p-calendar
+                placeholder="Fin"
+                formControlName="fFin"
+                dateFormat="dd/mm/yy"
+                [showIcon]="true"
+                (onSelect)="filtarFechaVencimiento($event,2)"
+              >
+              </p-calendar>
+            </div>
+          </div>
+        </div>
+      </form>
 
-    <p-table #table [value]="filteredPagos" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
-             [globalFilterFields]="['venta_id','cuota','monto','estado','fecha_pago','fecha_vencimiento']" [responsiveLayout]="'scroll'">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th pSortableColumn="venta_id">Venta_id <p-sortIcon field="venta_id"></p-sortIcon></th>
-          <th pSortableColumn="cuota">Cuota <p-sortIcon field="cuota"></p-sortIcon></th>
-          <th pSortableColumn="monto">Monto <p-sortIcon field="monto"></p-sortIcon></th>
-          <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
-          <th pSortableColumn="fecha_pago">Fecha_pago <p-sortIcon field="fecha_pago"></p-sortIcon></th>
-          <th pSortableColumn="fecha_vencimiento">Fecha_vencimiento <p-sortIcon field="fecha_vencimiento"></p-sortIcon></th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
 
-      <ng-template pTemplate="body" let-pago let-i="rowIndex">
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{ pago.venta_nombre
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12 lg:block">
 
-      }}</td>
-          <td>{{ pago.cuota
+            <div class="surface-card p-2 border-round-lg shadow-2">
 
-      }}</td>
-          <td>{{ pago.monto
+              <p-table #table [value]="itemsPagos" [paginator]="false" [rows]="10"
+                       [rowsPerPageOptions]="[10, 20, 50, 100]"
+                       [globalFilterFields]="['producto','descripcion','tamano','cantidad','cost','venta']"
+                       [responsiveLayout]="'scroll'"
 
-      }}</td>
-          <td>{{ pago.estado
+                       class="prime-table-responsive-grid table-ventas"
+              >
+                <ng-template pTemplate="header">
+                  <tr>
+                    <th pSortableColumn="cliente" class="col-cli">ID
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="producto" class="col-prod">CLIENTE
+                      <p-sortIcon field="producto"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="descripcion" class="col-cost">MASCOTA
+                      <p-sortIcon field="descripcion"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="tamano" class="col-cost">CUOTA
+                      <p-sortIcon field="tamano"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cantidad" class="col-cost">MONTO
+                      <p-sortIcon field="cantidad"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="cost" class="col-cost">ESTADO
+                      <p-sortIcon field="cost"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-cost">FECHA PAGO
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+                    <th pSortableColumn="venta" class="col-cost">FECHA VENCIMIENTO
+                      <p-sortIcon field="venta"></p-sortIcon>
+                    </th>
+                    <th class="col-accio">
 
-      }}</td>
-          <td>{{ pago.fecha_pago
-      | date: 'yyyy-MM-dd'
-      }}</td>
-          <td>{{ pago.fecha_vencimiento
-      | date: 'yyyy-MM-dd'
-      }}</td>
-          <td>
-            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', pago)"></button>
-            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(pago)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
+                    </th>
+                  </tr>
+                </ng-template>
+
+                <ng-template pTemplate="body" let-pago let-i="rowIndex">
+                  <tr>
+                    <td class="col-cli">{{i+1}}</td>
+                    <td class="col-prod">{{pago.cliente}}</td>
+                    <td class="col-desc">{{pago.mascota}}</td>
+                    <td class="col-tama">{{pago.cuota}}</td>
+                    <td class="col-cant">{{pago.monto}}</td>
+                    <td class="col-cant">{{pago.estado}}</td>
+                    <td class="col-cost">{{pago.fecha_pago | date:'dd/MM/yyyy' }}</td>
+                    <td class="col-vent">{{pago.fecha_vencimiento | date:'dd/MM/yyyy' }}
+                    </td>
+                    <td class="col-accio">
+                      <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', pago)"></button>
+                      <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(pago)"></button>
+                    </td>
+                  </tr>
+                </ng-template>
+              </p-table>
+            </div>
+          </div>
+        </div>
+        <!--grid-->
+      </div>
+    </div>
+    <p-toast></p-toast>
     <!-- Confirmation -->
     <p-confirmDialog></p-confirmDialog>
     <!-- Confirmation -->
@@ -134,32 +238,20 @@
           <div class="p-field col-12 md:col-6">
             <label>Fecha de Vencimiento</label>
             <p-calendar
-                        id="fecha_vencimientoInput"
-                        formControlName="fecha_vencimiento"
-                        dateFormat="dd/mm/yy"
-                        [showIcon]="true"
-                        [showButtonBar]="true"
-                       >
+              id="fecha_vencimientoInput"
+              formControlName="fecha_vencimiento"
+              dateFormat="dd/mm/yy"
+              [showIcon]="true"
+              [showButtonBar]="true"
+            >
             </p-calendar>
           </div>
 
           <!-- Hidden ID Field -->
           <input pInputText id="_idInput" formControlName="_id" [hidden]="true" />
-
           <!-- Venta Dropdown -->
           <div class="p-field col-12" [hidden]="true">
-            <label for="venta_id">Venta</label>
-            <p-dropdown id="venta_id"
-                        [options]="selected_venta"
-                        formControlName="venta_id"
-                        optionLabel="label"
-                        optionValue="value"
-                        (onChange)="onChangeVenta($event)"
-                        placeholder="Seleccione una venta"
-                        [filter]="true"
-                        filterBy="label"
-                        [showClear]="true">
-            </p-dropdown>
+            <input pInputText id="venta_idInput" formControlName="venta_id" />
           </div>
         </div>
 
@@ -180,5 +272,75 @@
         </div>
       </form>
     </p-dialog>
-  </ng-template>
+  </div>
+  <!-- PAGOS-->
+
+<!--  <ng-template pTemplate="title">Lista de Pago</ng-template>
+  <ng-template pTemplate="content">
+
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Pago"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredPagos" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['venta_id','cuota','monto','estado','fecha_pago','fecha_vencimiento']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="venta_id">Venta_id <p-sortIcon field="venta_id"></p-sortIcon></th>
+          <th pSortableColumn="cuota">Cuota <p-sortIcon field="cuota"></p-sortIcon></th>
+          <th pSortableColumn="monto">Monto <p-sortIcon field="monto"></p-sortIcon></th>
+          <th pSortableColumn="estado">Estado <p-sortIcon field="estado"></p-sortIcon></th>
+          <th pSortableColumn="fecha_pago">Fecha_pago <p-sortIcon field="fecha_pago"></p-sortIcon></th>
+          <th pSortableColumn="fecha_vencimiento">Fecha_vencimiento <p-sortIcon field="fecha_vencimiento"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-pago let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ pago.venta_nombre
+
+      }}</td>
+          <td>{{ pago.cuota
+
+      }}</td>
+          <td>{{ pago.monto
+
+      }}</td>
+          <td>{{ pago.estado
+
+      }}</td>
+          <td>{{ pago.fecha_pago
+      | date: 'yyyy-MM-dd'
+      }}</td>
+          <td>{{ pago.fecha_vencimiento
+      | date: 'yyyy-MM-dd'
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', pago)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(pago)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+
+  </ng-template>-->
 </p-card>
