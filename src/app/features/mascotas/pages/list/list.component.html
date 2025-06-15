@@ -29,7 +29,7 @@
             ></button>
             <!-- Label descriptivo -->
             <div type="button" class="text-lg font-medium"
-                 (click)="openModal('Nuevo')" style="cursor:pointer;">Generar cliente
+                 (click)="openModal('Nuevo')" style="cursor:pointer;">Generar Mascota
             </div>
 
           </div>
@@ -45,62 +45,32 @@
       <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
         <div class="grid">
           <!-- Primera fila: Dropdowns principales -->
-          <div class="col-12 md:col-6 lg:col-3 hidden ">
-            <p-dropdown
-              id="categoria_id"
-              formControlName="categoria_id"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Categoría"
-              [style]="{'width':'100%'}"
-            >
-            </p-dropdown>
-          </div>
-          <div class="col-12 md:col-6 lg:col-3 hidden ">
-            <p-dropdown
-              id="mixto_id"
-              formControlName="mixto_id"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Ventas,Productos,Precios"
-              [style]="{'width':'100%'}"
-            >
-            </p-dropdown>
-          </div>
-          <div class="col-12 md:col-12 lg:col-3">
-            <span class="p-input-icon-left w-full">
-              <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                placeholder="Buscar Cliente (Nombre Perrito)"
-                class="w-full busqueda"
-                [(ngModel)]="globalFilter"
-                (ngModelChange)="applyGlobalFilter()">
-            </span>
+          <div class="col-12 md:col-6 lg:col-4">
+               <span class="p-input-icon-left w-full">
+                  <i class="pi pi-search"></i>
+                  <p-dropdown
+                    id="busqueda_mascota"
+                    [options]="selected_mascota"
+                    class="busqueda"
+                    formControlName="busqueda_mascota"
+                    optionLabel="label"
+                    optionValue="value"
+                    placeholder="Buscar Mascota (Nombre Perrito)"
+                    [style]="{'width':'100%'}"
+                    [filter]="true"
+                    filterBy="label"
+                    [virtualScroll]="true"
+                    [virtualScrollItemSize]="34"
+                    [scrollHeight]="'300px'"
+                    [showClear]="true"
+                    (onChange)="buscarMascota($event)"
+                  >
+                  </p-dropdown>
+              </span>
           </div>
 
-          <div class="col-6 md:col-6 lg:col-2 hidden ">
-            <p-calendar
-              placeholder="Inicio"
-              formControlName="fechaInicio"
-              dateFormat="dd/mm/yy"
-              [showIcon]="true"
 
-            >
-            </p-calendar>
-          </div>
 
-          <div class="col-6 md:col-6 lg:col-2 hidden ">
-            <p-calendar
-              placeholder="Fin"
-              formControlName="fechaFin"
-              dateFormat="dd/mm/yy"
-              [showIcon]="true"
-
-            >
-            </p-calendar>
-          </div>
 
         </div>
       </div>
@@ -124,19 +94,21 @@
                 </thead>
                 <tbody>
                 <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>Rico can</td>
+                  <td class="p-2 pt-0 pb-0"><strong>Nombre : </strong>{{mascotaDatosPersonales.nombre}}
+                    <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', mascotaDatosPersonales)"></button>
+                  </td>
                 </tr>
                 <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>Nombre Dueño: </strong>Rico can</td>
+                  <td class="p-2 pt-0 pb-0"><strong>Nombre Dueño: </strong>{{mascotaDatosPersonales.cliente}}</td>
                 </tr>
                 <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>Teléfono : </strong>Comida</td>
+                  <td class="p-2 pt-0 pb-0"><strong>Teléfono : </strong>{{mascotaDatosPersonales.telefono}}</td>
                 </tr>
                 <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>Dirección : </strong>28 cm</td>
+                  <td class="p-2 pt-0 pb-0"><strong>Dirección : </strong>{{mascotaDatosPersonales.direccion}}</td>
                 </tr>
                 <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>Indicaciones Generales : </strong>28 soles</td>
+                  <td class="p-2 pt-0 pb-0"><strong>Indicaciones Generales : </strong>{{mascotaDatosPersonales.indicaciones_generales}}</td>
                 </tr>
                 </tbody>
               </table>
@@ -148,9 +120,9 @@
             <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
               <div class="p-0 text-center border-round  font-bold">
                 <p-image
-                  src="./assets/images/cliente/perro.jpg"
+                  src="{{apiUrl+'..'+mascota_foto}}"
                   alt="Cliente"
-                  width="100%"
+
                   height="148"
                 />
               </div>
@@ -167,12 +139,15 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>RICOCAN :</strong>CANT 23 UNIDADES</td>
+                <tr *ngFor="let item of mascotaVentasProducto" class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0">
+                    <strong>{{item.producto}}:</strong> CANT {{item.cantidad}} UNIDADES
+                  </td>
                 </tr>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>PEDIGREE :</strong>CANT 23 UNIDADES</td>
+                <tr *ngIf="mascotaVentasProducto.length === 0">
+                  <td class="p-2 text-center">No hay ventas registradas</td>
                 </tr>
+
                 </tbody>
               </table>
             </div>
@@ -188,15 +163,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>22/03/2025 --> </strong>BAÑO Y CORTE</td>
-                </tr>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>23/03/2025 --> </strong>CONSULTA MEDICA --VACUNAS</td>
-                </tr>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>24/03/2025 --> </strong>90 UNIDADES</td>
-                </tr>
+                  <tr *ngFor="let item of mascotaHistoriaClinica" class="border-bottom-1 surface-border">
+                    <td class="p-2 pt-0 pb-0"><strong>{{item.fecha}} --> </strong>{{item.tratamiento}}</td>
+                  </tr>
+                  <tr *ngIf="mascotaHistoriaClinica.length === 0">
+                    <td class="p-2 text-center">No hay historia clinicas registradas</td>
+                  </tr>
                 </tbody>
               </table>
             </div>
@@ -215,12 +187,124 @@
         <!--grid-->
       </div>
     </div>
+    <p-toast></p-toast>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="mascotaForm" >
+        <div class="p-fluid grid">
+          <div class="p-field col-12">
+            <label>Nombre</label>
+            <input pInputText id="nombreInput" formControlName="nombre" />
+          </div>
+          <!-- Campo Foto -->
+          <div class="p-field col-12">
+            <label>Foto del Producto</label>
+
+            <div class="flex flex-column gap-2">
+              <!-- Input de PrimeNG para subir archivos -->
+              <p-fileUpload
+                mode="basic"
+                name="file"
+                chooseLabel="Seleccionar foto"
+                accept="image/*"
+                (onSelect)="onFileSelect($event)"
+                [auto]="false"
+                [showUploadButton]="false"
+                [showCancelButton]="false"
+              ></p-fileUpload>
+
+              <!-- Previsualización de la imagen -->
+              <div *ngIf="previewImage" class="mt-2">
+                <p-image
+                  [src]="previewImage"
+                  alt="Previsualización"
+                  width="150"
+                  [preview]="true"
+                  class="shadow-2 border-round"
+                ></p-image>
+              </div>
+
+              <!-- Mostrar la URL de la imagen guardada -->
+              <small *ngIf="mascota_foto" class="text-500">
+                URL actual: {{ mascota_foto }}
+              </small>
+            </div>
+          </div>
+          <div class="p-field  col-4">
+            <label>Fecha_nacimiento</label>
+            <p-calendar formControlName="fecha_nacimiento" dateFormat="dd/mm/yy" [showIcon]="true">
+            </p-calendar>
+          </div>
+          <div class="p-field   col-4">
+            <label>Peso</label>
+            <input pInputText id="pesoInput" formControlName="peso" />
+          </div>
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+          <div class="p-field   col-4">
+            <label for="especie_id">Especie</label>
+            <p-dropdown
+              id="especie_id"
+              [options]="selected_especie"
+              formControlName="especie_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeEspecie($event)"
+              placeholder="Selecciona un especie">
+            </p-dropdown>
+          </div>
+          <div class="p-field   col-4">
+            <label for="raza_id">Raza</label>
+            <p-dropdown
+              id="raza_id"
+              [options]="selected_raza"
+              formControlName="raza_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeRaza($event)"
+              placeholder="Selecciona un raza">
+            </p-dropdown>
+          </div>
+          <div class="p-field   col-4">
+            <label for="sexo_id">Sexo</label>
+            <p-dropdown
+              id="sexo_id"
+              [options]="selected_sexo"
+              formControlName="sexo_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeSexo($event)"
+              placeholder="Selecciona un sexo">
+            </p-dropdown>
+          </div>
+          <div class="p-field   col-4">
+            <label for="cliente_id">Cliente</label>
+            <p-dropdown
+              id="cliente_id"
+              [options]="selected_cliente"
+              formControlName="cliente_id"
+              optionLabel="label"
+              optionValue="value"
+              (onChange)="onChangeCliente($event)"
+              placeholder="Selecciona un cliente">
+            </p-dropdown>
+          </div>
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
   </div>
   <!--MASCOTA-->
 
-  <ng-template pTemplate="title">Lista de Mascota</ng-template>
+  <!--<ng-template pTemplate="title">Lista de Mascota</ng-template>
   <ng-template pTemplate="content">
-    <p-toast></p-toast>
+
 
     <div class="p-datatable-header">
       <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
@@ -274,94 +358,6 @@
         </tr>
       </ng-template>
     </p-table>
-    <!-- Confirmation -->
-    <p-confirmDialog></p-confirmDialog>
-    <!-- Confirmation -->
-    <!-- Modal -->
-    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="mascotaForm" >
-        <div class="p-fluid">
 
-    <div class="p-field">
-      <label>Nombre</label>
-
-        <input pInputText id="nombreInput" formControlName="nombre" />
-
-    </div>
-
-
-    <div class="p-field">
-      <label>Fecha_nacimiento</label>
-
-        <p-calendar formControlName="fecha_nacimiento" dateFormat="mm/dd/yy" [showIcon]="true">
-        </p-calendar>
-
-    </div>
-
-
-    <div class="p-field">
-      <label>Peso</label>
-
-        <input pInputText id="pesoInput" formControlName="peso" />
-
-    </div>
-
-          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-           <div class="p-field">
-            <label for="especie_id">Especie</label>
-            <p-dropdown
-              id="especie_id"
-              [options]="selected_especie"
-              formControlName="especie_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeEspecie($event)"
-              placeholder="Selecciona un especie">
-            </p-dropdown>
-          </div>
-      <div class="p-field">
-            <label for="raza_id">Raza</label>
-            <p-dropdown
-              id="raza_id"
-              [options]="selected_raza"
-              formControlName="raza_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeRaza($event)"
-              placeholder="Selecciona un raza">
-            </p-dropdown>
-          </div>
-      <div class="p-field">
-            <label for="sexo_id">Sexo</label>
-            <p-dropdown
-              id="sexo_id"
-              [options]="selected_sexo"
-              formControlName="sexo_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeSexo($event)"
-              placeholder="Selecciona un sexo">
-            </p-dropdown>
-          </div>
-      <div class="p-field">
-            <label for="cliente_id">Cliente</label>
-            <p-dropdown
-              id="cliente_id"
-              [options]="selected_cliente"
-              formControlName="cliente_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeCliente($event)"
-              placeholder="Selecciona un cliente">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="p-dialog-footer">
-          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
-        </div>
-      </form>
-    </p-dialog>
-    <!-- Modal -->
-  </ng-template>
+  </ng-template>-->
 </p-card>

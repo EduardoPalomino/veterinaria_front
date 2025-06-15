@@ -4,6 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ClienteService } from '../../services/cliente.service';
 import { Cliente } from '../../interfaces/cliente.interface';
 
+import { AccesoService } from '../../../accesos/services/acceso.service';
+
+import { Router } from '@angular/router';
 @Component({
   selector: 'app-cliente-list',
   templateUrl: './list.component.html',
@@ -40,9 +43,18 @@ export class ClienteListComponent implements OnInit {
   mode: string = '';
   clienteForm: FormGroup;
   selected_cliente: { label: string; value: string }[] = [];
+
+  // ---  DATOS DE SESSION ------
+  nombre:string  = JSON.parse(sessionStorage.getItem('nombre') || '""').replace(/"/g, '');
+  email:string  = JSON.parse(sessionStorage.getItem('email') || '""').replace(/"/g, '');
+  rol_id: string = JSON.parse(sessionStorage.getItem('rol_id') || '""').replace(/"/g, '');
+  // ---  DATOS DE SESSION ------
+
   constructor(
+    private router: Router,
     private fb: FormBuilder,
     private clienteService: ClienteService,
+    private accesoService: AccesoService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService
   ) {
@@ -59,7 +71,47 @@ export class ClienteListComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    //this.loadClientes();
+    this.permiso();
+  }
+
+  onInitial(){
     this.loadClientes();
+  }
+
+  private permiso(): void {
+   if(!this.rol_id){
+     this.router.navigate(['admin/login']);
+   }else{
+     this.findPermisionRolPage(this.rol_id);
+   }
+ }
+
+  findPermisionRolPage(rol_id:string) {
+    this.accesoService.getByRolId(rol_id).subscribe({
+      next: (data:any) => {
+       const acceso = data.acceso[0]
+       this.checkAccessPermissions(acceso);
+      },
+      error: (err) => {
+        console.error('Error al cargar Acceso:', err);
+      }
+    });
+  }
+
+  checkAccessPermissions(acceso:any){
+    const pages: any[] = JSON.parse(acceso.page);
+    const nombreRoute = this.router.url;
+    const page = pages.find(p => p.ruta === nombreRoute);
+    //console.log("rol_id  "+this.rol_id +"  nombreRoute  "+nombreRoute +' ruta '+page.ruta)
+    //console.log("page.checked "+page.checked)
+     switch (page.checked) {
+      case true:
+        this.onInitial();
+        break;
+      default:
+       this.router.navigate(['admin/dashboard']);
+    }
   }
 
   private loadClientes(): void {

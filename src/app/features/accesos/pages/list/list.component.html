@@ -1,0 +1,85 @@
+<p-card>
+  <!-- ACCESOS-->
+  <div class="flex grid">
+    <!--Sidebar - 20% en desktop, 100% en móvil-->
+    <div class="col-12 md:col-12 lg:col-2 bg-gray-100">
+      <div class="grid flex">
+        <div class="col-12">
+          <moduleBoxTitle [title]="'ACCESOS'"></moduleBoxTitle>
+        </div>
+        <div class="col-6 md:col-6 lg:col-12 align-items-center">
+          <!-- <moduleBoxButton></moduleBoxButton>-->
+          <svg width="140" height="140" viewBox="0 0 512 512" fill="currentColor">
+            <path d="M226.5 92.9c14.3 42.9-.3 86.2-32.6 96.8s-70.1-15.6-84.4-58.5s.3-86.2 32.6-96.8s70.1 15.6 84.4 58.5zM100.4 198.6c18.9 32.4 14.3 70.1-10.2 84.1s-59.7-.9-78.5-33.3S-2.7 179.3 21.8 165.3s59.7 .9 78.5 33.3zM69.2 401.2C121.6 259.9 214.7 224 256 224s134.4 35.9 186.8 177.2c3.6 9.7 5.2 20.1 5.2 30.5l0 1.6c0 25.8-20.9 46.7-46.7 46.7c-11.5 0-22.9-1.4-34-4.2l-88-22c-15.3-3.8-31.3-3.8-46.6 0l-88 22c-11.1 2.8-22.5 4.2-34 4.2C84.9 480 64 459.1 64 433.3l0-1.6c0-10.4 1.6-20.8 5.2-30.5zM421.8 282.7c-24.5-14-29.1-51.7-10.2-84.1s54-47.3 78.5-33.3s29.1 51.7 10.2 84.1s-54 47.3-78.5 33.3zM310.1 189.7c-32.3-10.6-46.9-53.9-32.6-96.8s52.1-69.1 84.4-58.5s46.9 53.9 32.6 96.8s-52.1 69.1-84.4 58.5z"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+    <!-- Main - 80% en desktop "maria click nueva venta" (espacio restante), 100% en móvil -->
+    <div class="col-12 md:col-12 lg:col-10 pt-0 pb-0" >
+      <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+        <menuTop></menuTop>
+      </div>
+      <form [formGroup]="accesoForm">
+        <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+          <div class="grid">
+            <div class="col-2">
+                <p-dropdown
+                  id="rol_id"
+                  [options]="selected_rol"
+                  formControlName="rol_id"
+                  optionLabel="label"
+                  optionValue="value"
+                  (onChange)="onChangeRol($event)"
+                  placeholder="Selecciona un rol">
+                </p-dropdown>
+
+            </div>
+            <div class="col-3">
+              <button pButton icon="pi pi-save" label="Guardar cambios"
+                      style="margin-left: 20px"
+                      class="p-button-sm p-button-outlined" (click)="saveRegistro()">
+              </button>
+
+            </div>
+          </div>
+        </div>
+      </form>
+
+
+      <div class="w-full panel-data">
+        <!--grid-->
+        <div class="grid">
+          <!-- ========================================== -->
+          <!-- VERSIÓN DESKTOP - TABLA HORIZONTAL COMPLETA -->
+          <!-- ========================================== -->
+          <div class="col-12 lg:block p-10">
+
+            <div class="grid">
+              <!-- LIST -->
+              <div *ngFor="let page of pages; let ind = index" class="col-3">
+                <div id="page._id">
+                  <p-checkbox
+                    [inputId]="page._id"
+                    name="selectedPages"
+                    [value]="page"
+                    [(ngModel)]="selectedPages"
+                    (click)="checkedPage(page,ind)"
+                  ></p-checkbox>
+                  <label [for]="page._id" class="ml-2">{{ page.nombre | titlecase }}</label>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+        <!--grid-->
+      </div>
+    </div>
+    <p-toast></p-toast>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+  </div>
+  <!-- ACCESOS-->
+</p-card>

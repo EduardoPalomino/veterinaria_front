@@ -39,36 +39,33 @@
       <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
         <menuTop></menuTop>
       </div>
-      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4 hidden" style="box-sizing: border-box;">
         <div class="grid">
-          <!-- Primera fila: Dropdowns principales -->
-          <!--<div class="col-12 md:col-6 lg:col-3">
-            <p-dropdown
-              id="categoria_id"
-              formControlName="categoria_id"
-              optionLabel="label"
-              optionValue="value"
-              placeholder="Categoría"
-              [style]="{'width':'100%'}"
-            >
-            </p-dropdown>
-          </div>-->
-          <div class="col-12 md:col-12 lg:col-2">
-            <span class="p-input-icon-left w-full">
+          <div class="col-12 md:col-12 lg:col-4">
+
+            <span class="p-input-icon-left w-full" [formGroup]="reporteForm">
               <i class="pi pi-search"></i>
-              <input
-                pInputText
-                type="text"
-                placeholder="Búsqueda PET"
-                class="w-full busqueda"
-                [(ngModel)]="globalFilter"
-                (ngModelChange)="applyGlobalFilter()">
+              <p-dropdown
+                id="busqueda_mascota"
+                [options]="selected_mascota"
+                class="busqueda"
+                optionLabel="label"
+                placeholder="Buscar PET(Nombre Mascota)"
+                [style]="{'width':'100%'}"
+                [filter]="true"
+                filterBy="label"
+                [virtualScroll]="true"
+                [virtualScrollItemSize]="34"
+                [scrollHeight]="'300px'"
+                [showClear]="true"
+                (onChange)="onAddTGrid($event)"
+              >
+              </p-dropdown>
             </span>
           </div>
-          <div class="col-12 md:col-6 lg:col-3">
+          <div class="col-12 md:col-6 lg:col-4 hidden"  [formGroup]="reporteForm">
             <p-dropdown
               id="mixto_id"
-              formControlName="mixto_id"
               optionLabel="label"
               optionValue="value"
               placeholder="Ventas,Productos,Precios"
@@ -78,55 +75,53 @@
           </div>
 
 
-          <div class="col-6 md:col-6 lg:col-2">
+          <div class="col-6 md:col-6 lg:col-2" [formGroup]="reporteForm">
             <p-calendar
               placeholder="Inicio"
               formControlName="fechaInicio"
               dateFormat="dd/mm/yy"
               [showIcon]="true"
-
+              (onSelect)="filtarFecha($event,1)"
             >
             </p-calendar>
           </div>
-
-          <div class="col-6 md:col-6 lg:col-2">
+          <div class="col-6 md:col-6 lg:col-2" [formGroup]="reporteForm">
             <p-calendar
               placeholder="Fin"
               formControlName="fechaFin"
               dateFormat="dd/mm/yy"
               [showIcon]="true"
-
+              (onSelect)="filtarFecha($event,2)"
             >
             </p-calendar>
           </div>
-
         </div>
       </div>
       <div class="panel-card-reporte p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
         <div class="grid">
           <div class="col-12 md:col-6 lg:col-3 card-info">
-            <p-panel header="20000" class="bg-blue-500">
+            <p-panel [header]="cifraProductoInventario" class="bg-blue-500">
               <p class="m-0">
                 Productos en Inventario
               </p>
             </p-panel>
           </div>
           <div class="col-12 md:col-6 lg:col-3 card-info">
-            <p-panel header="$20000" class="bg-purple-500">
+            <p-panel [header]="cifraPrecioInventario" class="bg-purple-500">
               <p class="m-0">
                 Precio del Inventario
               </p>
             </p-panel>
           </div>
           <div class="col-12 md:col-6 lg:col-3 card-info">
-            <p-panel header="20000" class="bg-yellow-500">
+            <p-panel [header]="cifraCostoInventario" class="bg-yellow-500">
               <p class="m-0">
                 Costo del Inventario
               </p>
             </p-panel>
           </div>
           <div class="col-12 md:col-6 lg:col-3 card-info">
-            <p-panel header="20000" class="bg-green-500">
+            <p-panel [header]="cifraUtilidadTotal" class="bg-green-500">
               <p class="m-0">
                 Utilidad total
               </p>
@@ -139,36 +134,15 @@
       <div class="w-full panel-data grid reporte">
         <!--grid-->
         <div class="ol-12 md:col-3 lg:col-3 info-chart-bart d-flex flex-column justify-content-end">
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
-          <p-panel header="Productos más vendidos">
-            <p class="m-0">
-              Champu de Perro 200 Unid
-            </p>
-          </p-panel>
+          <div *ngFor="let item of productosMasVendidos | slice:0:6; let i = index">
+            <p-panel header="Productos más vendidos">
+              <p class="m-0">
+                {{ item.nombre }}  <strong>{{ item.cantidad }} Unid</strong>
+              </p>
+            </p-panel>
+          </div>
+
+
 
         </div>
         <div class="col-12 md:col-9 lg:col-9">
@@ -181,117 +155,5 @@
     </div>
 
   </div>
-  <!--REPORTES-->
-<!--  <ng-template pTemplate="title">Lista de Reporte</ng-template>
-  <ng-template pTemplate="content">
-    <p-toast></p-toast>
 
-    <div class="p-datatable-header">
-      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
-        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
-          <i class="pi pi-search"></i>
-          <input
-            pInputText
-            type="text"
-            placeholder="Búsqueda"
-            class="p-inputtext p-component p-element w-full"
-            [(ngModel)]="globalFilter"
-            (ngModelChange)="applyGlobalFilter()">
-        </span>
-
-        <button pButton icon="pi pi-user-plus" label="Nuevo Reporte"
-                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
-        </button>
-      </div>
-    </div>
-
-    <p-table #table [value]="filteredReportes" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
-             [globalFilterFields]="['tipo_reporte','fecha_generado','contenido','usuario_id']" [responsiveLayout]="'scroll'">
-      <ng-template pTemplate="header">
-        <tr>
-          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
-          <th pSortableColumn="tipo_reporte">Tipo_reporte <p-sortIcon field="tipo_reporte"></p-sortIcon></th>
-          <th pSortableColumn="fecha_generado">Fecha_generado <p-sortIcon field="fecha_generado"></p-sortIcon></th>
-          <th pSortableColumn="contenido">Contenido <p-sortIcon field="contenido"></p-sortIcon></th>
-          <th pSortableColumn="usuario_id">Usuario_id <p-sortIcon field="usuario_id"></p-sortIcon></th>
-          <th>Acciones</th>
-        </tr>
-      </ng-template>
-
-      <ng-template pTemplate="body" let-reporte let-i="rowIndex">
-        <tr>
-          <td>{{ i + 1 }}</td>
-          <td>{{ reporte.tipo_reporte
-
-      }}</td>
-          <td>{{ reporte.fecha_generado
-      | date: 'yyyy-MM-dd'
-      }}</td>
-          <td>{{ reporte.contenido
-
-      }}</td>
-          <td>{{ reporte.usuario_nombre
-
-      }}</td>
-          <td>
-            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', reporte)"></button>
-            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(reporte)"></button>
-          </td>
-        </tr>
-      </ng-template>
-    </p-table>
-    &lt;!&ndash; Confirmation &ndash;&gt;
-    <p-confirmDialog></p-confirmDialog>
-    &lt;!&ndash; Confirmation &ndash;&gt;
-    &lt;!&ndash; Modal &ndash;&gt;
-    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
-      <form [formGroup]="reporteForm" >
-        <div class="p-fluid">
-
-    <div class="p-field">
-      <label>Tipo_reporte</label>
-
-        <input pInputText id="tipo_reporteInput" formControlName="tipo_reporte" />
-
-    </div>
-
-
-    <div class="p-field">
-      <label>Fecha_generado</label>
-
-        <p-calendar formControlName="fecha_generado" dateFormat="mm/dd/yy" [showIcon]="true">
-        </p-calendar>
-
-    </div>
-
-
-    <div class="p-field">
-      <label>Contenido</label>
-
-        <input pInputText id="contenidoInput" formControlName="contenido" />
-
-    </div>
-
-          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
-           <div class="p-field">
-            <label for="usuario_id">Usuario</label>
-            <p-dropdown
-              id="usuario_id"
-              [options]="selected_usuario"
-              formControlName="usuario_id"
-              optionLabel="label"
-              optionValue="value"
-              (onChange)="onChangeUsuario($event)"
-              placeholder="Selecciona un usuario">
-            </p-dropdown>
-          </div>
-        </div>
-        <div class="p-dialog-footer">
-          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
-          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
-        </div>
-      </form>
-    </p-dialog>
-    &lt;!&ndash; Modal &ndash;&gt;
-  </ng-template>-->
 </p-card>

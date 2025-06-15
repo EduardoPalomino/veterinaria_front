@@ -23,6 +23,8 @@ import { DashboardListComponent } from './features/dashboards/pages/list/list.co
 import {InventarioListComponent} from "./features/inventarios/pages/list/list.component";
 import {LoginListComponent} from "./features/logins/pages/list/list.component";
 import {PagoListComponent} from "./features/pagos/pages/list/list.component";
+import {PageListComponent} from "./features/pages/pages/list/list.component";
+import {AccesoListComponent} from "./features/accesos/pages/list/list.component";
 const routes: Routes = [
   {
     path: '',
@@ -117,6 +119,14 @@ const routes: Routes = [
       {
         path:'pagos',
         component:PagoListComponent
+      },
+      {
+        path:'pages',
+        component:PageListComponent
+      },
+      {
+        path:'accesos',
+        component:AccesoListComponent
       }
     ]
   },

@@ -15,6 +15,7 @@ interface kardex {
   _id: string;
   orden: number;
   producto: string;
+  categoria_producto_id: string;
   tamano: string;
   fecha: string;
   tipo: string;
@@ -107,6 +108,7 @@ export class InventarioListComponent implements OnInit {
         _id: d._id,
         orden: 0,
         producto: producto?.nombre,
+        categoria_producto_id: producto?.categoria_producto_id,
         tamano: producto?.tamano,
         fecha: d.created_at,
         tipo: 'EGRESO',
@@ -121,6 +123,7 @@ export class InventarioListComponent implements OnInit {
         _id: c._id,
         orden: 0,
         producto: producto?.nombre,
+        categoria_producto_id: producto?.categoria_producto_id,
         tamano: producto?.tamano,
         fecha: c.created_at,
         tipo: 'INGRESO',
@@ -141,7 +144,66 @@ export class InventarioListComponent implements OnInit {
     console.log(this.itemsEngresoVenta);
   }
 
-  changeCategoriaproducto($event: any) {
-    // Tu lógica aquí
+  formatDate(isoString: string): string {
+    const date = new Date(isoString);
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  formatDatePicker(date: Date): string {
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(date);
+  }
+
+  convertDateToISO(dateInput: string | Date): string {
+    let day, month, year;
+
+    if (dateInput instanceof Date) {
+      day = dateInput.getDate();
+      month = dateInput.getMonth() + 1;
+      year = dateInput.getFullYear();
+    } else {
+      const parts = dateInput.split('/').map(Number);
+      if (parts.length !== 3) throw new Error("Formato inválido. Use dd/mm/yyyy");
+      [day, month, year] = parts;
+    }
+
+    const date = new Date(Date.UTC(year, month - 1, day, 5, 0, 0));
+    return date.toISOString();
+  }
+
+  filtarCategoria($event: any) {
+    const categoria_producto_id = $event.value;
+    this.loadKardex();
+    if (!categoria_producto_id) {
+      this.loadKardex();
+      return;
+    }
+    // Filtrar itemsPagos por el nombre del cliente
+    this.itemsKardex = this.itemsKardex.filter(item => item.categoria_producto_id === categoria_producto_id);
+  }
+  filtarFecha($event: any, tipoFecha: number) {
+    this.loadKardex();
+    const fecha = this.formatDatePicker($event);
+    const filtro = {
+      inicio: tipoFecha === 1 ? fecha : '',
+      fin: tipoFecha === 2 ? fecha : ''
+    };
+    if (!filtro.inicio && !filtro.fin) {
+      return this.loadKardex();
+    }
+    this.itemsKardex = this.itemsKardex.filter(item => {
+      let itemFecha = this.formatDate(item.fecha);
+      console.log(itemFecha)
+      return (!filtro.inicio || itemFecha>= filtro.inicio) &&
+        (!filtro.fin || itemFecha <= filtro.fin);
+    });
+
   }
 }

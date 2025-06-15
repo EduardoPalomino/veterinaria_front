@@ -144,6 +144,9 @@ export class VentaListComponent implements OnInit {
   };
   tipo_pago ='';
   pago:pago={} as pago;
+
+  barcodeTimeout: any;
+  lastScannedValue: string = '';
   constructor(
     private fb: FormBuilder,
     private ventaService: VentaService,
@@ -538,36 +541,54 @@ export class VentaListComponent implements OnInit {
     }
   }
 
-  saveVenta(data: any): void {
+  saveVenta(): void {
+
+    const fecha = this.formatDatePicker(this.fechaActual);
+    let estado ='';
+    if(this.nro_cuotas==1){
+      estado='pagada';
+    }else{
+      estado='activa';
+    }
+
+
+
     const venta = {
-      _id: data._id,
-      fecha: this.convertDateToISO(data.fecha),
-      total: data.total,
-      tipo_pago: data.tipo_pago === 'Por Cobrar' ? 'cuotas' : 'contado',
-      cantidad_cuota:  data.cantidad_cuota,
-      estado:  data.estado,
-      cliente_id: data.cliente_id,
-      usuario_id: data.usuario_id,
-      created_at: this.convertDateToISO(data.fecha),
-      updated_at: this.convertDateToISO(data.fecha)
-    };
-
-    const venta_detalle = {
       _id: '',
-      venta_id: '',
-      producto_id: data.producto_id,
-      cantidad: data.cantidad,
-      precio_venta: data.precio,
-      created_at: this.convertDateToISO(data.fecha),
-      updated_at: this.convertDateToISO(data.fecha),
+      fecha: this.convertDateToISO(fecha),
+      total: String(this.ventaNuevaMonto),
+      tipo_pago: this.tipo_pago === 'Por Cobrar' ? 'cuotas' : 'contado',
+      cantidad_cuota:  this.nro_cuotas,
+      estado:  estado,
+      cliente_id: this.cliente_id,
+      usuario_id: this.usuario_id,
+      created_at: this.convertDateToISO(fecha),
+      updated_at: this.convertDateToISO(fecha)
     };
-
+    const group_venta_detalle: any[] = [];
+    this.itemsVenta.forEach(item => {
+      const venta_detalle = {
+        _id: '',
+        venta_id: '',
+        producto_id: item.producto_id,
+        cantidad: item.stock,
+        precio_venta: item.precio_venta,
+        created_at: this.convertDateToISO(fecha),
+        updated_at: this.convertDateToISO(fecha),
+      };
+      group_venta_detalle.push(venta_detalle);
+    });
+    //reinicio
+    this.itemsVenta=[]
     if (this.mode === 'Nuevo') {
       this.ventaService.create(venta).subscribe({
         next: (response: any) => {
-          venta_detalle.venta_id = response.data._id;
-          this.saveVentaDetalle(venta_detalle);
-          //this.loadVentas();
+          const venta_id = response.data._id;
+          group_venta_detalle.forEach(detalle => {
+            detalle.venta_id = venta_id;
+            this.saveVentaDetalle(detalle);
+          });
+
           this.mensajeConfirmacion(venta, "Registro Creado");
           this.modalVisible = false;
           this.registraPago(response.data._id);
@@ -575,7 +596,7 @@ export class VentaListComponent implements OnInit {
         error: (err) => console.error('Error al guardar el venta:', err)
       });
     } else {
-      venta_detalle._id = data.venta_detalle_id;
+     /* venta_detalle._id = data.venta_detalle_id;
       venta_detalle.venta_id = data._id;
 
       this.ventaService.update(venta._id, venta).subscribe({
@@ -586,14 +607,14 @@ export class VentaListComponent implements OnInit {
           this.modalVisible = false;
         },
         error: (err) => console.error('Error al actualizar venta:', err)
-      });
+      });*/
     }
   }
 
   saveRegistro(): void {
     if (this.ventaForm.valid) {
       const data = this.ventaForm.value;
-      this.saveVenta(data);
+      //this.saveVenta(data);
     }
   }
 
@@ -657,14 +678,8 @@ export class VentaListComponent implements OnInit {
 
   realizarVenta(){
     this.mode ='Nuevo';
-    const fecha = this.formatDatePicker(this.fechaActual);
-    let estado ='';
-    if(this.nro_cuotas==1){
-      estado='pagada';
-    }else{
-      estado='activa';
-    }
 
+    /*
     this.itemsVenta.forEach(item => {
       this.ventaData={
         _id:null,
@@ -679,16 +694,10 @@ export class VentaListComponent implements OnInit {
         cantidad:item.stock,
         precio:item.precio_venta,
       }
-     // console.log(JSON.stringify(this.ventaData,null,2))
       this.saveVenta(this.ventaData);
-    });
+    });*/
+    this.saveVenta();
 
-   // console.log('-------------MASCOTAS------');
-   // console.log(JSON.stringify(this.mascotas,null,2));
-   // console.log('-------------CLIENTES------');
-   // console.log(JSON.stringify(this.clientes,null,2));
-   // console.log('-------------ITEM-VENTAS------');
-   // console.log(JSON.stringify(this.itemsVenta,null,2));
 
 
   }
@@ -760,8 +769,12 @@ export class VentaListComponent implements OnInit {
     });
     this.ventaNuevaMonto = montos.reduce((total, monto) => total + monto, 0);
   }
-  onAddProductToSale($event:any):void{
-    const productoId = $event.value;
+  searchProduct($event:any):void{
+    let productoId = $event.value;
+    this.onAddProductToSale(productoId)
+  }
+  onAddProductToSale(productoId:any):void{
+    //const productoId = $event.value;
     // Buscar el producto en la lista completa
     const productoSeleccionado = this.productos.find(p => p._id === productoId);
     if (!productoSeleccionado) {
@@ -825,5 +838,50 @@ export class VentaListComponent implements OnInit {
 
   }
 
+
+  onBarcodeInput(event: Event): void {
+    clearTimeout(this.barcodeTimeout);
+    const input = event.target as HTMLInputElement;
+    this.lastScannedValue = input.value;
+
+    this.barcodeTimeout = setTimeout(() => {
+      if (this.lastScannedValue && this.lastScannedValue.length > 0) {
+        this.searchProductBarcode({data: this.lastScannedValue});
+        input.value = '';
+      }
+    }, 200); // Aumenta el tiempo de espera
+  }
+
+  searchProductBarcode(event: Event | { data: string }): void {
+
+    const codigo_barras = (event instanceof Event)
+      ? (event.target as HTMLInputElement).value
+      : event.data;
+
+    let producto = this.productos.find(p => p.codigo_barras === codigo_barras);
+
+    if (producto) {
+      this.onAddProductToSale(producto._id);
+      // Limpiar el campo después de encontrar el producto
+      if (event instanceof Event) {
+        (event.target as HTMLInputElement).value = '';
+      }
+    } else {
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Producto no encontrado',
+        detail: `No se encontró un producto con código ${codigo_barras}`
+      });
+    }
+  }
+
+  searchProductBarcodexnoo($event:any){
+    console.log($event.data)
+    let codigo_barras = $event.data;
+
+    let producto = this.productos.find(p => p.codigo_barras === codigo_barras);
+
+    this.onAddProductToSale(producto?._id)
+  }
   protected readonly length = length;
 }

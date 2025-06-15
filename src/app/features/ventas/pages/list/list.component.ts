@@ -17,7 +17,6 @@ import { Producto } from '../../../productos/interfaces/producto.interface';
 import { Categoria_producto } from '../../../categoria_productos/interfaces/categoria_producto.interface';
 import { Mascota } from '../../../mascotas/interfaces/mascota.interface';
 import { Pago } from '../../../pagos/interfaces/pago.interface';
-import {Historia_clinica} from "../../../historia_clinicas/interfaces/historia_clinica.interface";
 
 interface VentaExtendida extends Venta {
   cantidad: string;
@@ -37,15 +36,16 @@ interface HistorialVenta {
   precio: string;
   venta_total: string;
 }
+
 interface itemsVenta {
-  _id:string;
-  usuario_id:string;
-  cliente_id:string;
-  tipo_pago: string,
-  cantidad_cuota:  number,
-  estado:  string,
+  _id: string;
+  usuario_id: string;
+  cliente_id: string;
+  tipo_pago: string;
+  cantidad_cuota: number;
+  estado: string;
   mascota: string;
-  producto_id:string;
+  producto_id: string;
   nombre: string;
   descripcion: string;
   tamano: string;
@@ -53,7 +53,9 @@ interface itemsVenta {
   precio_venta: string;
   subtotal: string;
 }
+
 type pago = Omit<Pago, '_id'|'created_at'|'updated_at'>
+
 @Component({
   selector: 'app-venta-list',
   templateUrl: './list.component.html',
@@ -74,7 +76,7 @@ export class VentaListComponent implements OnInit {
   historial_ventas: HistorialVenta[] = [];
   categoria_productos: Categoria_producto[] = [];
   mascotas: Mascota[] = [];
-  itemsVenta:itemsVenta[]=[];
+  itemsVenta: itemsVenta[] = [];
 
   selected_cliente: { label: string; value: string }[] = [];
   selected_usuario: { label: string; value: string }[] = [];
@@ -82,19 +84,20 @@ export class VentaListComponent implements OnInit {
   selected_mascota: { label: string; value: string }[] = [];
   selected_categoria_producto: { label: string; value: string }[] = [];
   selected_checkbox_producto: Producto[] = [];
-  selected_tipo_pago : { label: string; value: string }[]=[
-    {label:'Efectivo',value:'1'},
-    {label:'Tarjeta Débito',value:'2'},
-    {label:'Tarjeta Crédito',value:'3'},
-    {label:'Cupón',value:'4'},
-    {label:'Yape',value:'5'},
-    {label:'Plin',value:'6'},
-    {label:'Por Cobrar',value:'7'},
-    {label:'Otro medio',value:'8'}
-  ]
+  selected_tipo_pago: { label: string; value: string }[] = [
+    {label: 'Efectivo', value: '1'},
+    {label: 'Tarjeta Débito', value: '2'},
+    {label: 'Tarjeta Crédito', value: '3'},
+    {label: 'Cupón', value: '4'},
+    {label: 'Yape', value: '5'},
+    {label: 'Plin', value: '6'},
+    {label: 'Por Cobrar', value: '7'},
+    {label: 'Otro medio', value: '8'}
+  ];
+
   ventaForm: FormGroup;
   mode: string = '';
-  ventaNuevaMonto:number=0;
+  ventaNuevaMonto: number = 0;
   venta: VentaExtendida = {
     _id: '',
     fecha: '',
@@ -114,36 +117,40 @@ export class VentaListComponent implements OnInit {
     usuario_nombre: ''
   };
 
-  pet_asignado:string='Sin asignar';
-  pet_asignadoId:string='';
+  pet_asignado: string = 'Sin asignar';
+  pet_asignadoId: string = '';
   fechaActual = new Date();
-  usuario_id:string='67cd3ffb2b98c15b3b2e9ba2';
+  usuario_id: string = '67cd3ffb2b98c15b3b2e9ba2';
   cliente_id: string = '';
 
   /*MODAL PAGOS INFORMATION */
-  importeTotal:number=0;
-  importeMensual:number=0;
-  nro_cuotas:number=1;
-  fechaPago:string='';
-  importeTotalPagado:number=0;
-  vueltoPagado:number=0;
-  listaHTML='';
-  pagos_cuotas:any[]=[];
-  ventaData:any={
-    _id:null,
-    fecha:'',
-    total:'',
+  importeTotal: number = 0;
+  importeMensual: number = 0;
+  nro_cuotas: number = 1;
+  fechaPago: string = '';
+  importeTotalPagado: number = 0;
+  vueltoPagado: number = 0;
+  listaHTML = '';
+  pagos_cuotas: any[] = [];
+  ventaData: any = {
+    _id: null,
+    fecha: '',
+    total: '',
     tipo_pago: '',
     cantidad_cuota: 0,
     estado: '',
-    cliente_id:'',
-    usuario_id:'',
-    producto_id:'',
-    cantidad:'',
-    precio:'',
+    cliente_id: '',
+    usuario_id: '',
+    producto_id: '',
+    cantidad: '',
+    precio: '',
   };
-  tipo_pago ='';
-  pago:pago={} as pago;
+  tipo_pago = '';
+  pago: pago = {} as pago;
+
+  barcodeTimeout: any;
+  lastScannedValue: string = '';
+
   constructor(
     private fb: FormBuilder,
     private ventaService: VentaService,
@@ -155,7 +162,7 @@ export class VentaListComponent implements OnInit {
     private productoService: ProductoService,
     private categoria_productoService: Categoria_productoService,
     private mascotaService: MascotaService,
-    private pagoService:PagoService
+    private pagoService: PagoService
   ) {
     this.ventaForm = this.fb.group({
       _id: [null],
@@ -212,14 +219,22 @@ export class VentaListComponent implements OnInit {
   }
 
   private loadProductos(): void {
+    console.log('Cargando productos...');
     this.productoService.getAll().subscribe({
       next: (data) => {
+        console.log('Productos recibidos del servicio:', data);
         this.productos = data;
         this.filteredVentas = [...this.productos];
         this.selected_producto = this.productos.map(producto => ({
           label: producto.descripcion,
           value: producto._id
         }));
+
+        console.log('Resumen de códigos de barras:');
+        this.productos.forEach(p => {
+          console.log(`ID: ${p._id}, Nombre: ${p.nombre}, Código: ${p.codigo_barras}, Tipo: ${typeof p.codigo_barras}`);
+        });
+
         this.checkDataAndLoadVentas();
       },
       error: (err) => console.error('Error al cargar productos:', err)
@@ -249,6 +264,7 @@ export class VentaListComponent implements OnInit {
       error: (err) => console.error('Error al cargar Detalle_ventas:', err)
     });
   }
+
   private loadMascotas(): void {
     this.mascotaService.getAll().subscribe({
       next: (data) => {
@@ -258,11 +274,11 @@ export class VentaListComponent implements OnInit {
           value: mascota._id
         }));
         this.checkDataAndLoadVentas();
-
       },
-      error: (err) => console.error('Error al cargar Detalle_ventas:', err)
+      error: (err) => console.error('Error al cargar mascotas:', err)
     });
   }
+
   private checkDataAndLoadVentas(): void {
     if (this.clientes.length > 0 &&
       this.usuarios.length > 0 &&
@@ -277,8 +293,6 @@ export class VentaListComponent implements OnInit {
       next: (data) => {
         this.ventas = data.map(venta => this.extendVentaData(venta));
         this.historial_ventas = data.map(venta => this.createHistorialVenta(venta));
-
-        this.logDataForDebugging();
       },
       error: (err) => console.error('Error al cargar Ventas:', err)
     });
@@ -305,7 +319,7 @@ export class VentaListComponent implements OnInit {
     let mascota = this.findMascota(venta.cliente_id);
 
     return {
-      cliente: mascota?.nombre || '',//this.findClienteName(venta.cliente_id),
+      cliente: mascota?.nombre || '',
       producto: producto?.nombre || '',
       descripcion: producto?.descripcion || '',
       tamano: producto?.tamano || '',
@@ -335,13 +349,9 @@ export class VentaListComponent implements OnInit {
     if (!detalle) return 0;
     return Number(detalle.cantidad || 0) * Number(detalle.precio_venta || 0);
   }
-  private findMascota(cliente_id: string):Mascota | undefined{
+
+  private findMascota(cliente_id: string): Mascota | undefined {
     return this.mascotas.find(c => c.cliente_id === cliente_id);
-  }
-  private logDataForDebugging(): void {
-   // console.log('----VENTAS---', JSON.stringify(this.ventas, null, 2));
-   // console.log('----DETALLE VENTAS---', JSON.stringify(this.detalle_ventas, null, 2));
-   // console.log('----HISTORIAL VENTAS---', JSON.stringify(this.historial_ventas, null, 2));
   }
 
   applyGlobalFilter(): void {
@@ -355,7 +365,7 @@ export class VentaListComponent implements OnInit {
     this.filteredVentas = this.productos.filter(producto =>
       Object.values(producto).some(
         value => value && value.toString().toLowerCase().includes(filterValue)
-      ));  // <-- Falta ) para cerrar el some()
+      ));
   }
 
   openModal(mode: 'Nuevo' | 'Editar', venta?: VentaExtendida): void {
@@ -380,26 +390,24 @@ export class VentaListComponent implements OnInit {
       this.ventaForm.reset();
     }
   }
+
   openModalPago(mode: 'Nuevo' | 'Editar', venta?: VentaExtendida): void {
     this.mode = mode;
     this.modalPagoTitle = `INFORMACIÓN DE PAGO`;
     this.calcularMontoPagar();
     this.modalPagoVisible = true;
-    this.fechaPago =  this.formatDatePicker(this.fechaActual);
-   // console.log(this.fechaPago)
+    this.fechaPago = this.formatDatePicker(this.fechaActual);
+
     if (mode === 'Editar' && venta) {
-
-
+      // Lógica para editar
     } else {
       this.importeMensual = this.ventaNuevaMonto;
       this.importeTotal = this.ventaNuevaMonto;
     }
   }
 
-  // Función para generar las cuotas
   generarCuotas(fechaInicio: any, monto: any, cuotas: any) {
-    this.pagos_cuotas = []; // Limpiamos el array antes de generar nuevas cuotas
-
+    this.pagos_cuotas = [];
     const [dia, mes, anio] = fechaInicio.split('/');
     let fecha = new Date(anio, mes - 1, dia);
 
@@ -428,40 +436,31 @@ export class VentaListComponent implements OnInit {
   }
 
   calcularPagosCuotas() {
-    // Verificamos que tengamos los datos necesarios
     if (!this.importeTotal || !this.nro_cuotas || this.nro_cuotas <= 0) {
       console.error('Datos incorrectos para calcular cuotas');
       return;
     }
-    // Calculamos el importe mensual (división simple sin intereses)
+
     this.importeMensual = this.importeTotal / this.nro_cuotas;
-    // Redondeamos a 2 decimales (opcional)
     this.importeMensual = Math.round(this.importeMensual * 100) / 100;
-    // Calculamos el total a pagar (en este caso igual al importeTotal)
-   // this.importeTotalPagado = this.importeTotal
-    // Inicializamos el vuelto (si aplica)
 
-    this.importeTotalPagado > this.importeMensual ? this.calcularVuelto(): this.vueltoPagado = 0;
-    this.generarCuotas(this.fechaPago, this.importeMensual,this.nro_cuotas);
-
+    this.importeTotalPagado > this.importeMensual ? this.calcularVuelto() : this.vueltoPagado = 0;
+    this.generarCuotas(this.fechaPago, this.importeMensual, this.nro_cuotas);
   }
-  calcularVuelto(){
+
+  calcularVuelto() {
     this.vueltoPagado = this.importeTotalPagado - this.importeMensual;
   }
-  onTipoPagoChange($event:any){
-   // console.log("onTipoPagoChange"+JSON.stringify($event))
-   // console.log(JSON.stringify($event))
+
+  onTipoPagoChange($event: any) {
     this.tipo_pago = $event.value.label;
-   // console.log("tipo_pago"+this.tipo_pago);
-    switch(this.tipo_pago) {
+    switch (this.tipo_pago) {
       case 'Por Cobrar':
-       // console.log('Si por cuotas')
-        this.calcularPagosCuotas()
+        this.calcularPagosCuotas();
         break;
-      default:
-    //  console.log('No por cuotas')
     }
   }
+
   confirmarEliminacion(venta: Venta): void {
     this.confirmationService.confirm({
       message: `¿Estás seguro de eliminar el Venta: ${venta.fecha}?`,
@@ -511,7 +510,6 @@ export class VentaListComponent implements OnInit {
   actualizaStockProducto(producto: Producto): void {
     this.productoService.update(producto._id, producto).subscribe({
       next: (data: any) => {
-      //  console.log('Stock de producto:' + data.nombre + ' Nuevo Stock es:' + data.stock);
         this.loadInitialData();
       },
       error: (err) => console.error('Error de producto Encontrado:', err)
@@ -539,29 +537,27 @@ export class VentaListComponent implements OnInit {
   }
 
   saveVenta(): void {
-
     const fecha = this.formatDatePicker(this.fechaActual);
-    let estado ='';
-    if(this.nro_cuotas==1){
-      estado='pagada';
-    }else{
-      estado='activa';
+    let estado = '';
+    if (this.nro_cuotas == 1) {
+      estado = 'pagada';
+    } else {
+      estado = 'activa';
     }
-
-
 
     const venta = {
       _id: '',
       fecha: this.convertDateToISO(fecha),
       total: String(this.ventaNuevaMonto),
       tipo_pago: this.tipo_pago === 'Por Cobrar' ? 'cuotas' : 'contado',
-      cantidad_cuota:  this.nro_cuotas,
-      estado:  estado,
+      cantidad_cuota: this.nro_cuotas,
+      estado: estado,
       cliente_id: this.cliente_id,
       usuario_id: this.usuario_id,
       created_at: this.convertDateToISO(fecha),
       updated_at: this.convertDateToISO(fecha)
     };
+
     const group_venta_detalle: any[] = [];
     this.itemsVenta.forEach(item => {
       const venta_detalle = {
@@ -576,6 +572,7 @@ export class VentaListComponent implements OnInit {
       group_venta_detalle.push(venta_detalle);
     });
 
+    this.itemsVenta = [];
     if (this.mode === 'Nuevo') {
       this.ventaService.create(venta).subscribe({
         next: (response: any) => {
@@ -591,39 +588,25 @@ export class VentaListComponent implements OnInit {
         },
         error: (err) => console.error('Error al guardar el venta:', err)
       });
-    } else {
-     /* venta_detalle._id = data.venta_detalle_id;
-      venta_detalle.venta_id = data._id;
-
-      this.ventaService.update(venta._id, venta).subscribe({
-        next: () => {
-          this.saveVentaDetalle(venta_detalle);
-          //this.loadVentas();
-          this.mensajeConfirmacion(venta, "Registro Actualizado");
-          this.modalVisible = false;
-        },
-        error: (err) => console.error('Error al actualizar venta:', err)
-      });*/
     }
   }
 
   saveRegistro(): void {
     if (this.ventaForm.valid) {
       const data = this.ventaForm.value;
-      //this.saveVenta(data);
     }
   }
 
   onChangeCliente(e: any): void {
-    this.ventaForm.patchValue({ cliente_id: e.value });
+    this.ventaForm.patchValue({cliente_id: e.value});
   }
 
   onChangeUsuario(e: any): void {
-    this.ventaForm.patchValue({ usuario_id: e.value });
+    this.ventaForm.patchValue({usuario_id: e.value});
   }
 
   onChangeProducto(e: any): void {
-    this.ventaForm.patchValue({ producto_id: e.value });
+    this.ventaForm.patchValue({producto_id: e.value});
   }
 
   mensajeConfirmacion(venta: Venta, mensaje: string): void {
@@ -636,7 +619,7 @@ export class VentaListComponent implements OnInit {
 
   calcularTotal(): void {
     const total = this.ventaForm.value.cantidad * this.ventaForm.value.precio;
-    this.ventaForm.patchValue({ total: total });
+    this.ventaForm.patchValue({total: total});
   }
 
   formatDate(isoString: string): string {
@@ -647,14 +630,15 @@ export class VentaListComponent implements OnInit {
       year: 'numeric'
     }).format(date);
   }
-  formatDatePicker(date: Date): string {
 
+  formatDatePicker(date: Date): string {
     return new Intl.DateTimeFormat('es-PE', {
       day: '2-digit',
       month: '2-digit',
       year: 'numeric'
     }).format(date);
   }
+
   convertDateToISO(dateInput: string | Date): string {
     let day, month, year;
 
@@ -672,64 +656,40 @@ export class VentaListComponent implements OnInit {
     return date.toISOString();
   }
 
-  realizarVenta(){
-    this.mode ='Nuevo';
-
-    /*
-    this.itemsVenta.forEach(item => {
-      this.ventaData={
-        _id:null,
-        fecha:fecha,
-        total:item.subtotal,
-        tipo_pago: this.tipo_pago,
-        cantidad_cuota:  this.nro_cuotas,
-        estado:  estado,
-        cliente_id:this.cliente_id,
-        usuario_id:this.usuario_id,
-        producto_id:item.producto_id,
-        cantidad:item.stock,
-        precio:item.precio_venta,
-      }
-      this.saveVenta(this.ventaData);
-    });*/
+  realizarVenta() {
+    this.mode = 'Nuevo';
     this.saveVenta();
-
-
-
   }
-  registarVentaPago(){
+
+  registarVentaPago() {
     this.realizarVenta();
-    //this.registraPago(venta_id);
     this.modalPagoVisible = false;
   }
+
   registraPago(venta_id: any): void {
-    // Verificamos que hayan cuotas para procesar
     if (!this.pagos_cuotas || this.pagos_cuotas.length === 0) {
       console.error('No hay cuotas para registrar');
       return;
     }
 
-    // Procesamos cada cuota
     const pagosArray: Pago[] = [];
     this.pagos_cuotas.forEach((p, i) => {
-      // Convertimos la fecha al formato ISO que usualmente espera el backend
       const fechaPagoISO = i === 0 ? new Date().toISOString() : 'null';
       const fechaVencimientoISO = this.convertDateToISO(p.fecha_vencimiento);
-      // AQUI EL ARRAY CREO
 
       let pago: Pago = {
-        _id: '', // El backend probablemente lo genera automáticamente
+        _id: '',
         venta_id: venta_id,
-        medio_pago: i === 0 ? this.tipo_pago : 'Pendiente', // Solo la primera tiene medio de pago
+        medio_pago: i === 0 ? this.tipo_pago : 'Pendiente',
         cuota: p.cuota,
         monto: p.monto.toString(),
         estado: p.estado,
-        fecha_pago: i === 0 ? fechaPagoISO :'FALTA', // Solo la primera tiene fecha de pago
+        fecha_pago: i === 0 ? fechaPagoISO : 'FALTA',
         fecha_vencimiento: fechaVencimientoISO,
         created_at: new Date().toISOString(),
         updated_at: new Date().toISOString()
       };
-      // Agregamos el pago al array
+
       pagosArray.push(pago);
 
       this.pagoService.create(pago).subscribe({
@@ -738,7 +698,6 @@ export class VentaListComponent implements OnInit {
         },
         error: (err) => {
           console.error('Error al guardar el pago:', err);
-          // Aquí podrías mostrar un mensaje al usuario
           this.messageService.add({
             severity: 'error',
             summary: 'Error',
@@ -746,52 +705,60 @@ export class VentaListComponent implements OnInit {
           });
         }
       });
-
-
     });
 
-    console.log(JSON.stringify(pagosArray,null,2))
+    console.log(JSON.stringify(pagosArray, null, 2));
   }
-  calcularMontoPagar(){
+
+  calcularMontoPagar() {
     let montos: number[] = this.itemsVenta.map(item => {
       return parseInt(item.precio_venta) * parseInt(item.stock);
     });
     this.ventaNuevaMonto = montos.reduce((total, monto) => total + monto, 0);
   }
+
   onCheckboxTogglex(): void {
-   // console.log(JSON.stringify(this.selected_checkbox_producto, null, 2));
     let montos: number[] = this.selected_checkbox_producto.map(item => {
       return parseInt(item.precio_venta) * parseInt(item.stock);
     });
     this.ventaNuevaMonto = montos.reduce((total, monto) => total + monto, 0);
   }
-  onAddProductToSale($event:any):void{
-    const productoId = $event.value;
-    // Buscar el producto en la lista completa
+
+  searchProduct($event: any): void {
+    let productoId = $event.value;
+    this.onAddProductToSale(productoId);
+  }
+
+  onAddProductToSale(productoId: any): void {
+    console.log('--- INICIO onAddProductToSale ---');
+    console.log('ID de producto recibido:', productoId);
+
     const productoSeleccionado = this.productos.find(p => p._id === productoId);
     if (!productoSeleccionado) {
-      console.warn('Producto no encontrado');
+      console.warn('Producto no encontrado con ID:', productoId);
       return;
     }
-    // Verificar si el producto ya está en itemsVenta
+
+    console.log('Producto seleccionado:', productoSeleccionado);
+
     const itemExistenteIndex = this.itemsVenta.findIndex(item => item._id === productoId);
+    console.log('Índice de item existente:', itemExistenteIndex);
 
     if (itemExistenteIndex >= 0) {
-      // Si existe, incrementar cantidad
-      this.itemsVenta[itemExistenteIndex].stock = String(Number(this.itemsVenta[itemExistenteIndex].stock)+1);
+      console.log('Producto ya existe en itemsVenta, incrementando cantidad');
+      this.itemsVenta[itemExistenteIndex].stock = String(Number(this.itemsVenta[itemExistenteIndex].stock) + 1);
       this.itemsVenta[itemExistenteIndex].subtotal = String(Number(this.itemsVenta[itemExistenteIndex].precio_venta) * Number(this.itemsVenta[itemExistenteIndex].stock));
-
     } else {
-      // Si no existe, agregar nuevo item
+      console.log('Producto nuevo, agregando a itemsVenta');
       this.itemsVenta.push({
         _id: productoSeleccionado._id,
-        usuario_id:this.usuario_id,
-        cliente_id:'',
+        usuario_id: this.usuario_id,
+        cliente_id: '',
         tipo_pago: '',
         cantidad_cuota: 0,
         estado: '',
         mascota: this.pet_asignado,
-        producto_id:productoId,
+        producto_id: productoId,
         nombre: productoSeleccionado.nombre,
         descripcion: productoSeleccionado.descripcion,
         precio_venta: productoSeleccionado.precio_venta,
@@ -801,34 +768,91 @@ export class VentaListComponent implements OnInit {
       });
     }
 
+    console.log('ItemsVenta actualizado:', this.itemsVenta);
+    console.log('--- FIN onAddProductToSale ---');
   }
 
-  onUpdateProductToSaleQuantity(p:itemsVenta,i:number){
-   // console.log("onUpdateProductToSaleQuantity"+p.stock+'  '+i)
+  onUpdateProductToSaleQuantity(p: itemsVenta, i: number) {
     this.itemsVenta[i].stock = p.stock;
     this.itemsVenta[i].subtotal = String(Number(this.itemsVenta[i].precio_venta) * Number(this.itemsVenta[i].stock));
-
   }
 
-  onUpdateProductToSalePrice(p:itemsVenta,i:number){
-   // console.log("onUpdateProductToSalePrice"+p.precio_venta+'  '+i)
+  onUpdateProductToSalePrice(p: itemsVenta, i: number) {
     this.itemsVenta[i].precio_venta = p.precio_venta;
     this.itemsVenta[i].subtotal = String(Number(this.itemsVenta[i].precio_venta) * Number(this.itemsVenta[i].stock));
   }
 
-  onAddMascotaToSale($event:any){
+  onAddMascotaToSale($event: any) {
     let mascota = $event.value;
-    this.pet_asignado=mascota.label;
-    this.pet_asignadoId=mascota.value;
+    this.pet_asignado = mascota.label;
+    this.pet_asignadoId = mascota.value;
 
     this.cliente_id = this.mascotas.find(m => m._id === this.pet_asignadoId)?.cliente_id || '';
     this.itemsVenta = this.itemsVenta.map(item => ({
       ...item,
       mascota: this.pet_asignado,
-      cliente_id:this.cliente_id
+      cliente_id: this.cliente_id
     }));
-
   }
 
-  protected readonly length = length;
+  onBarcodeInput(event: Event): void {
+    console.log('--- INICIO onBarcodeInput ---');
+    console.log('Evento de entrada:', event);
+
+    clearTimeout(this.barcodeTimeout);
+    const input = event.target as HTMLInputElement;
+    this.lastScannedValue = input.value;
+
+    console.log('Valor escaneado:', this.lastScannedValue);
+
+    this.barcodeTimeout = setTimeout(() => {
+      console.log('Timeout ejecutado, último valor:', this.lastScannedValue);
+      if (this.lastScannedValue && this.lastScannedValue.length > 0) {
+        console.log('Buscando producto con código:', this.lastScannedValue);
+        this.searchProductBarcode({data: this.lastScannedValue});
+        input.value = '';
+      }
+    }, 2000);
+
+    console.log('--- FIN onBarcodeInput ---');
+  }
+
+  searchProductBarcode(event: Event | { data: string }): void {
+    console.log('--- INICIO searchProductBarcode ---');
+
+    const codigo_barras = (event instanceof Event)
+      ? (event.target as HTMLInputElement).value
+      : event.data;
+
+    console.log('Código de barras recibido:', codigo_barras, 'Tipo:', typeof codigo_barras);
+
+    console.log('Productos disponibles:', this.productos.map(p => ({
+      id: p._id,
+      nombre: p.nombre,
+      codigo_barras: p.codigo_barras,
+      tipo_codigo: typeof p.codigo_barras
+    })));
+
+    let producto = this.productos.find(p => {
+      console.log(`Comparando: ${p.codigo_barras} (${typeof p.codigo_barras}) con ${codigo_barras} (${typeof codigo_barras})`);
+      return p.codigo_barras?.toString().trim() === codigo_barras.toString().trim();
+    });
+
+    if (producto) {
+      console.log('Producto encontrado:', producto);
+      this.onAddProductToSale(producto._id);
+      if (event instanceof Event) {
+        (event.target as HTMLInputElement).value = '';
+      }
+    } else {
+      console.warn('Producto NO encontrado con código:', codigo_barras);
+      this.messageService.add({
+        severity: 'warn',
+        summary: 'Producto no encontrado',
+        detail: `No se encontró un producto con código ${codigo_barras}`
+      });
+    }
+
+    console.log('--- FIN searchProductBarcode ---');
+  }
 }

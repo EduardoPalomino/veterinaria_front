@@ -26,8 +26,9 @@ export class UsuarioListComponent implements OnInit {
   private fb: FormBuilder,
   private usuarioService: UsuarioService,
   private confirmationService: ConfirmationService,
-  private messageService: MessageService
-  ,private rolService:RolService
+  private messageService: MessageService,
+  private rolService:RolService,
+
   ) {
     this.usuarioForm = this.fb.group({
       _id: [null],
@@ -180,7 +181,7 @@ deleteUsuario(usuario: Usuario) {
 
   onChangeRol(e: any) {
         this.usuarioForm.patchValue({rol_id:e.value});
-       } 
+       }
 
   mensajeConfirmacion(usuario: Usuario,mensaje:String){
     this.messageService.add({

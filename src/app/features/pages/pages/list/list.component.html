@@ -1,0 +1,122 @@
+<p-card>
+  <ng-template pTemplate="title">Lista de Page</ng-template>
+  <ng-template pTemplate="content">
+    <p-toast></p-toast>
+
+    <div class="p-datatable-header">
+      <div style="display: flex; justify-content: space-between; align-items: center; width: 100%;">
+        <span class="p-input-icon-left w-full sm:w-20rem flex-order-1 sm:flex-order-0">
+          <i class="pi pi-search"></i>
+          <input
+            pInputText
+            type="text"
+            placeholder="Búsqueda"
+            class="p-inputtext p-component p-element w-full"
+            [(ngModel)]="globalFilter"
+            (ngModelChange)="applyGlobalFilter()">
+        </span>
+
+        <button pButton icon="pi pi-user-plus" label="Nuevo Page"
+                class="p-button-sm p-button-outlined" (click)="openModal('Nuevo')">
+        </button>
+      </div>
+    </div>
+
+    <p-table #table [value]="filteredPages" [paginator]="true" [rows]="10" [rowsPerPageOptions]="[10, 20, 50, 100]"
+             [globalFilterFields]="['order','ruta','nombre','descripcion','icon']" [responsiveLayout]="'scroll'">
+      <ng-template pTemplate="header">
+        <tr>
+          <th pSortableColumn="id">ID <p-sortIcon field="id"></p-sortIcon></th>
+          <th pSortableColumn="order">Order <p-sortIcon field="order"></p-sortIcon></th>
+          <th pSortableColumn="ruta">Ruta <p-sortIcon field="ruta"></p-sortIcon></th>
+          <th pSortableColumn="nombre">Nombre <p-sortIcon field="nombre"></p-sortIcon></th>
+          <th pSortableColumn="descripcion">Descripcion <p-sortIcon field="descripcion"></p-sortIcon></th>
+          <th pSortableColumn="icon">Icon <p-sortIcon field="icon"></p-sortIcon></th>
+          <th>Acciones</th>
+        </tr>
+      </ng-template>
+
+      <ng-template pTemplate="body" let-page let-i="rowIndex">
+        <tr>
+          <td>{{ i + 1 }}</td>
+          <td>{{ page.order
+      
+      }}</td>
+          <td>{{ page.ruta
+      
+      }}</td>
+          <td>{{ page.nombre
+      
+      }}</td>
+          <td>{{ page.descripcion
+      
+      }}</td>
+          <td>{{ page.icon
+      
+      }}</td>
+          <td>
+            <button pButton icon="pi pi-pencil" class="p-button-text p-button-sm p-button-warning" (click)="openModal('Editar', page)"></button>
+            <button pButton icon="pi pi-trash" class="p-button-text p-button-sm p-button-danger" (click)="confirmarEliminacion(page)"></button>
+          </td>
+        </tr>
+      </ng-template>
+    </p-table>
+    <!-- Confirmation -->
+    <p-confirmDialog></p-confirmDialog>
+    <!-- Confirmation -->
+    <!-- Modal -->
+    <p-dialog [(visible)]="modalVisible" [header]="modalTitle" [modal]="true" [closable]="true" [style]="{width: '500px'}">
+      <form [formGroup]="pageForm" >
+        <div class="p-fluid">
+           
+    <div class="p-field">
+      <label>Order</label>
+      
+        <input pInputText id="orderInput" formControlName="order" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Ruta</label>
+      
+        <input pInputText id="rutaInput" formControlName="ruta" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Nombre</label>
+      
+        <input pInputText id="nombreInput" formControlName="nombre" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Descripcion</label>
+      
+        <input pInputText id="descripcionInput" formControlName="descripcion" />
+      
+    </div>
+  
+
+    <div class="p-field">
+      <label>Icon</label>
+      
+        <input pInputText id="iconInput" formControlName="icon" />
+      
+    </div>
+  
+          <input pInputText id="_idInput" formControlName="_id" [hidden]="true"  />
+           
+        </div>
+        <div class="p-dialog-footer">
+          <button pButton type="button" label="Cancelar" class="p-button-text" (click)="modalVisible = false"></button>
+          <button pButton type="button" label="Guardar" class="p-button-text" (click)="saveRegistro()"></button>
+        </div>
+      </form>
+    </p-dialog>
+    <!-- Modal -->
+  </ng-template>
+</p-card>

@@ -57,7 +57,7 @@
                 [virtualScrollItemSize]="34"
                 [scrollHeight]="'300px'"
                 [showClear]="true"
-                (onChange)="onAddProductToBuy($event)"
+                (onChange)="searchProduct($event)"
               >
               </p-dropdown>
             </span>
@@ -67,13 +67,18 @@
 
             <span class="p-input-icon-left w-full">
               <i class="pi pi-barcode"></i>
-              <input
-                pInputText
-                type="text"
-                placeholder="Buscar Barcode"
-                class="w-full"
-                [(ngModel)]="globalFilter"
-                (ngModelChange)="applyGlobalFilter()">
+            <input
+              id="producto_barcode"
+              formControlName="producto_barcode"
+              pInputText
+              type="text"
+              placeholder="Buscar Barcode"
+              class="w-full"
+
+              (keyup.enter)="searchProductBarcode($event)"
+              (input)="onBarcodeInput($event)"
+            >
+
             </span>
 
           </div>

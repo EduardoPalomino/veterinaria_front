@@ -18,6 +18,8 @@ export const environment = {
   DETALLE_VENTA_ENDPOINT: 'Detalle_ventas',
   HISTORIA_CLINICA_ENDPOINT: 'Historia_clinicas',
   REPORTE_ENDPOINT: 'Reportes',
-  PAGO_ENDPOINT: 'Pagos'
+  PAGO_ENDPOINT: 'Pagos',
+  PAGE_ENDPOINT: 'Pages',
+  ACCESO_ENDPOINT: 'Accesos'
 };
 

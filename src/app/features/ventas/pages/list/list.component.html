@@ -44,7 +44,7 @@
       <div class="w-full panel-menu  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
         <menuTop></menuTop>
       </div>
-      <div class="panel-filtro  p-2 sm:p-3 md:p-4" style="box-sizing: border-box;">
+      <div class="panel-filtro  p-2 sm:p-3 md:p-4 "  style="box-sizing: border-box;">
         <div class="grid">
           <!-- Primera fila: Dropdowns principales -->
           <div class="col-12 md:col-6 lg:col-5">
@@ -66,7 +66,7 @@
                 [virtualScrollItemSize]="34"
                 [scrollHeight]="'300px'"
                 [showClear]="true"
-                (onChange)="onAddProductToSale($event)"
+                (onChange)="searchProduct($event)"
               >
               </p-dropdown>
             </span>
@@ -77,12 +77,15 @@
             <span class="p-input-icon-left w-full">
               <i class="pi pi-barcode"></i>
               <input
+                id="producto_barcode"
+                formControlName="producto_barcode"
                 pInputText
                 type="text"
                 placeholder="Buscar Barcode"
                 class="w-full"
-                [(ngModel)]="globalFilter"
-                (ngModelChange)="applyGlobalFilter()">
+                (keyup.enter)="searchProductBarcode($event)"
+                (input)="onBarcodeInput($event)"
+              >
             </span>
 
           </div>
@@ -202,6 +205,9 @@
               >
                 <ng-template pTemplate="header">
                   <tr>
+                    <th pSortableColumn="cliente" class="col-cli">ID
+                      <p-sortIcon field="cliente"></p-sortIcon>
+                    </th>
                     <th pSortableColumn="cliente" class="col-cli">CLIENTE
                       <p-sortIcon field="cliente"></p-sortIcon>
                     </th>
@@ -229,6 +235,7 @@
 
                 <ng-template pTemplate="body" let-historial_venta let-i="rowIndex" >
                   <tr>
+                    <td class="col-cli">{{i+1}}</td>
                     <td class="col-cli">{{historial_venta.cliente}}</td>
                     <td class="col-prod">{{historial_venta.producto}}</td>
                     <td class="col-desc">{{historial_venta.descripcion}}</td>

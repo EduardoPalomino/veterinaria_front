@@ -13,9 +13,15 @@ export class DashboardListComponent implements OnInit {
   modalVisible: boolean = false;
   modalTitle: string = '';
   mode:string='';
+
+  // ---  DATOS DE SESSION ------
+  nombre:any  = sessionStorage.getItem('nombre');
+  email:any  = sessionStorage.getItem('email');
+  rol_id:any  = sessionStorage.getItem('rol_id');
+  // ---  DATOS DE SESSION ------
+
   constructor(
   private fb: FormBuilder,
-
   private confirmationService: ConfirmationService,
   private messageService: MessageService,
   private router: Router

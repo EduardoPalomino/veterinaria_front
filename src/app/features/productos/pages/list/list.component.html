@@ -169,11 +169,10 @@
           <div class="col-12 md:col-6 lg:col-6">
             <!-- Registro 1 -->
             <div class="bg-gray-100 p-2 border-1 border-gray-200 border-round-md">
-              <div class="p-0 text-center border-round  font-bold">
+              <div class="p-0 text-center border-round  font-bold " *ngIf="productoGrid.foto" >
                 <p-image
-                  src="./assets/images/web/dashboard.png"
-                  alt="Dashboard"
-                  width="100%"
+                  src="{{apiUrl+'..'+productoGrid.foto}}"
+                  alt="Producto"
                   height="148"
                 />
               </div>
@@ -193,7 +192,12 @@
                 <tr class="border-bottom-1 surface-border">
                   <td class="p-2 pt-0 pb-0"><strong>{{productoGrid.categoria}} : </strong>CANT {{productoGrid.stock}} UNIDADES</td>
                 </tr>
-
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0">&nbsp;    </td>
+                </tr>
+                <tr class="border-bottom-1 surface-border">
+                  <td class="p-2 pt-0 pb-0">&nbsp;    </td>
+                </tr>
                 </tbody>
               </table>
             </div>
@@ -209,15 +213,10 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>22/03/2025 --> </strong>200 UNIDADES</td>
+                <tr *ngFor="let item of productoInventario" class="border-bottom-1 surface-border"  >
+                  <td class="p-2 pt-0 pb-0"><strong>{{ item.fecha }} --> </strong>{{ item.unidades }} UNIDADES</td>
                 </tr>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>23/03/2025 --> </strong>100 UNIDADES</td>
-                </tr>
-                <tr class="border-bottom-1 surface-border">
-                  <td class="p-2 pt-0 pb-0"><strong>24/03/2025 --> </strong>90 UNIDADES</td>
-                </tr>
+
                 </tbody>
               </table>
             </div>
@@ -260,15 +259,43 @@
                  formControlName="descripcion" />
         </div>
         <!-- Campo Foto -->
+        <!-- Campo Foto -->
         <div class="p-field col-12">
-          <label for="fotoInput">Foto</label>
-          <input pInputText
-                 id="fotoInput"
-                 formControlName="foto" />
+          <label>Foto del Producto</label>
+
+          <div class="flex flex-column gap-2">
+            <!-- Input de PrimeNG para subir archivos -->
+            <p-fileUpload
+              mode="basic"
+              name="file"
+              chooseLabel="Seleccionar foto"
+              accept="image/*"
+              (onSelect)="onFileSelect($event)"
+              [auto]="false"
+              [showUploadButton]="false"
+              [showCancelButton]="false"
+            ></p-fileUpload>
+
+            <!-- Previsualización de la imagen -->
+            <div *ngIf="previewImage" class="mt-2">
+              <p-image
+                [src]="previewImage"
+                alt="Previsualización"
+                width="150"
+                [preview]="true"
+                class="shadow-2 border-round"
+              ></p-image>
+            </div>
+
+            <!-- Mostrar la URL de la imagen guardada -->
+            <small *ngIf="productoForm.get('foto')?.value" class="text-500">
+              URL actual: {{ productoForm.get('foto')?.value }}
+            </small>
+          </div>
         </div>
         <!-- Campo Codigo Barras -->
         <div class="p-field col-12">
-          <label for="fotoInput">Código Barras</label>
+          <label for="codigo_barrasInput">Código Barras</label>
           <input pInputText
                  id="codigo_barrasInput"
                  formControlName="codigo_barras" />

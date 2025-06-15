@@ -4,12 +4,9 @@ import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { ProductoService } from '../../services/producto.service';
 import { Categoria_productoService } from '../../../categoria_productos/services/categoria_producto.service';
 import { ProveedorService } from '../../../proveedors/services/proveedor.service';
-import { Detalle_compraService } from '../../../detalle_compras/services/detalle_compra.service';
 import { Producto } from '../../interfaces/producto.interface';
 import { Categoria_producto } from '../../../categoria_productos/interfaces/categoria_producto.interface';
 import { Proveedor } from '../../../proveedors/interfaces/proveedor.interface';
-import { Detalle_compra } from '../../../detalle_compras/interfaces/detalle_compra.interface';
-
 import { HttpClient } from '@angular/common/http';
 import {environment} from "../../../../../environments/environment";
 
@@ -23,7 +20,6 @@ import {environment} from "../../../../../environments/environment";
 export class ProductoListComponent implements OnInit {
   // Propiedades del componente
   productos: Producto[] = [];
-  detalle_compras: Detalle_compra[] = [];
   producto: Producto={
     _id: '',
     nombre: '',
@@ -57,25 +53,19 @@ export class ProductoListComponent implements OnInit {
   productoGrid: any = {
     _id:'',
     nombre: '',
-    foto: '',
     categoria: '',
     tamano: '',
     precio_venta: '',
     stock: ''
   };
-  productoInventario: any = {
-    _id:'',
-    fecha: '',
-    unidades: ''
-  };
+
   uploadedFile: File | null = null;
   previewImage: string | ArrayBuffer | null = null;
-  apiUrl = `${environment.API_URL}`;
+  private apiUrl = `${environment.API_URL}${environment.PRODUCTO_ENDPOINT}`;
   constructor(
     private fb: FormBuilder,
     private http: HttpClient,
     private productoService: ProductoService,
-    private detalle_compraService: Detalle_compraService,
     private confirmationService: ConfirmationService,
     private messageService: MessageService,
     private categoria_productoService: Categoria_productoService,
@@ -99,7 +89,6 @@ export class ProductoListComponent implements OnInit {
     this.loadCategoria_productos();
     this.loadProveedors();
     this.loadProductos();
-    this.loadDetalle_compras()
   }
 
   // Métodos de carga de datos
@@ -125,36 +114,6 @@ export class ProductoListComponent implements OnInit {
     });
   }
 
-  loadDetalle_compras() {
-    this.detalle_compraService.getAll().subscribe({
-      next: (data) => {
-        this.detalle_compras = data;
-      },
-      error: (err) => {
-        console.error('Error al cargar Detalle_compras:', err);
-      }
-    });
-  }
-  formatDate(isoString: string | null | undefined): string {
-    // Si no hay fecha (null, undefined o string vacío), usa la fecha actual
-    const date = isoString ? new Date(isoString) : new Date();
-
-    // Si la fecha es inválida (NaN), usa la fecha actual
-    if (isNaN(date.getTime())) {
-      return new Intl.DateTimeFormat('es-PE', {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric'
-      }).format(new Date()); // Fecha actual en formato peruano
-    }
-
-    // Formatea la fecha correctamente
-    return new Intl.DateTimeFormat('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(date);
-  }
   loadCategoria_productos() {
     this.categoria_productoService.getAll().subscribe({
       next: (data) => {
@@ -191,7 +150,6 @@ export class ProductoListComponent implements OnInit {
     this.productoGrid={
         _id:this.producto._id,
         nombre: this.producto.nombre,
-        foto: this.producto.foto,
         categoria: productoCategoria.nombre,
         tamano: this.producto.tamano,
         precio: this.producto.precio_venta,
@@ -199,18 +157,6 @@ export class ProductoListComponent implements OnInit {
     };
     console.log(producto_id)
     console.log(JSON.stringify(this.productoGrid))
-
-    //this.productoInventario =findDetalle_compra
-
-    this.productoInventario = this.detalle_compras
-      .filter(d => d.producto_id === producto_id)
-      .map(d => ({
-        _id:d._id,
-        fecha: this.formatDate(d.created_at),
-        unidades: d.cantidad,
-      }));
-
-
   }
   //find
   private findProducto(producto_id: string): any{
@@ -218,9 +164,6 @@ export class ProductoListComponent implements OnInit {
   }
   private findCategoria(categoria_id: string): any{
     return this.categoria_productos.find(c => c._id === categoria_id);
-  }
-  private findDetalle_compra(producto_id: string): any{
-    return this.detalle_compras.find(c => c.producto_id === producto_id);
   }
   // Métodos de filtrado
   applyGlobalFilter() {
@@ -278,62 +221,31 @@ export class ProductoListComponent implements OnInit {
     if (this.productoForm.valid) {
       const producto = this.productoForm.value;
 
-      // Verificar si hay una imagen para subir
-      if (this.uploadedFile && !producto.foto) {
-        // Primero subir la imagen, luego guardar el producto
-        this.uploadFile().then((imageUrl: string) => {
-          producto.foto = imageUrl;
-          this.saveProductData(producto);
-        }).catch(error => {
-          console.error('Error al subir la imagen:', error);
-          this.messageService.add({
-            severity: 'error',
-            summary: 'Error',
-            detail: 'Error al subir la imagen del producto'
-          });
+      console.log(JSON.stringify(producto));
+      producto._id === null && delete producto._id;
+      console.log(JSON.stringify(producto));
+
+      if (this.mode === 'Nuevo') {
+        this.productoService.create(producto).subscribe({
+          next: (data) => {
+            console.log('Producto guardado con éxito:', data);
+            this.productos.push(data);
+            this.modalVisible = false;
+            this.loadProductos();
+            this.mensajeConfirmacion(producto, "Registro Actualizado");
+          },
+          error: (err) => {
+            console.error('Error al guardar el producto:', err);
+          }
         });
       } else {
-        // No hay imagen nueva que subir, guardar directamente
-        this.saveProductData(producto);
-      }
-    }
-  }
-
-  private async  saveProductData(producto: any) {
-    // Limpiar el ID si es nuevo registro
-    producto._id === null && delete producto._id;
-
-    // Si hay una imagen para subir, procesarla primero
-    // Si hay una imagen para subir, procesarla primero
-    if (this.uploadedFile) {
-      const imageUrl = await this.uploadFile();
-      producto.foto = imageUrl;
-    }
-
-    const saveObservable = this.mode === 'Nuevo'
-      ? this.productoService.create(producto)
-      : this.productoService.update(producto._id, producto);
-
-    saveObservable.subscribe({
-      next: (data) => {
-        console.log('Producto guardado con éxito:', data);
-        this.modalVisible = false;
-        this.loadProductos();
-        this.mensajeConfirmacion(producto, "Registro Actualizado");
-
-        // Resetear el estado de la imagen
-        this.uploadedFile = null;
-        this.previewImage = null;
-      },
-      error: (err) => {
-        console.error('Error al guardar el producto:', err);
-        this.messageService.add({
-          severity: 'error',
-          summary: 'Error',
-          detail: 'Error al guardar el producto'
+        this.productoService.update(producto._id, producto).subscribe(() => {
+          this.modalVisible = false;
+          this.loadProductos();
+          this.mensajeConfirmacion(producto, "Registro Actualizado");
         });
       }
-    });
+    }
   }
 
   // Métodos de selección
@@ -401,7 +313,7 @@ export class ProductoListComponent implements OnInit {
     }
   }
   // Modificamos uploadFile para que devuelva una Promise
-  private async  uploadFile(): Promise<string>  {
+  private uploadFile(): Promise<string> {
     return new Promise((resolve, reject) => {
       if (!this.uploadedFile) {
         reject('No hay archivo para subir');
@@ -411,7 +323,7 @@ export class ProductoListComponent implements OnInit {
       const formData = new FormData();
       formData.append('file', this.uploadedFile);
 
-      this.http.post(`${this.apiUrl}upload`, formData).subscribe({
+      this.http.post(`${this.apiUrl}/upload`, formData).subscribe({
         next: (res: any) => {
           resolve(res.url); // Resuelve con la URL de la imagen
         },

@@ -41,7 +41,8 @@ import {UsuarioListComponent} from "./features/usuarios/pages/list/list.componen
 import {InventariosModule} from "./features/inventarios/inventarios.module";
 import {LoginsModule} from "./features/logins/logins.module";
 import {PagosModule} from "./features/pagos/pagos.module";
-
+import {PagesModule} from "./features/pages/pages.module";
+import {AccesosModule} from "./features/accesos/accesos.module";
 @NgModule({
   declarations: [
     AppComponent
@@ -71,6 +72,8 @@ import {PagosModule} from "./features/pagos/pagos.module";
     InventariosModule,
     LoginsModule,
     PagosModule,
+    PagesModule,
+    AccesosModule,
     CalendarModule,
     TableModule,
     CardModule,

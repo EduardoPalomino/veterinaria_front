@@ -27,11 +27,6 @@ export interface CompraEntendida extends Compra {
   usuario_nombre: string;
 }
 
-export interface ProductoResponse {
-  producto: Producto;
-  categoria_producto: any;
-  proveedor: any;
-}
 interface HistorialCompra {
   proveedor: string;
   producto: string;
@@ -41,12 +36,13 @@ interface HistorialCompra {
   precio: string;
   compra_total: string;
 }
+
 interface itemsCompra {
-  _id:string;
-  usuario_id:string;
-  proveedor_id:string;
+  _id: string;
+  usuario_id: string;
+  proveedor_id: string;
   proveedor: string;
-  producto_id:string;
+  producto_id: string;
   nombre: string;
   descripcion: string;
   tamano: string;
@@ -61,9 +57,6 @@ interface itemsCompra {
   providers: [ConfirmationService, MessageService]
 })
 export class CompraListComponent implements OnInit {
-  // Propiedades del componente
-  _id_detalle_compra: string = '';
-  compra_id: string = '';
   compras: CompraEntendida[] = [];
   detalle_compras: Detalle_compra[] = [];
   filteredCompras: CompraEntendida[] = [];
@@ -73,36 +66,28 @@ export class CompraListComponent implements OnInit {
   productos: Producto[] = [];
   proveedors: Proveedor[] = [];
   usuarios: Usuario[] = [];
-  itemsCompra:itemsCompra[]=[];
+  itemsCompra: itemsCompra[] = [];
   historial_compras: HistorialCompra[] = [];
-  // Selectores
+
   selected_proveedor: { label: string; value: string }[] = [];
   selected_usuario: { label: string; value: string }[] = [];
   selected_producto: { label: string; value: string }[] = [];
   selected_checkbox_producto: any[] = [];
 
-  // Formulario
   compraForm: FormGroup;
   mode: string = '';
+  compraNuevaMonto: number = 0;
 
-  // Producto temporal
-  producto: any = {
-    _id: '',
-    nombre: '',
-    categoria_producto_id: '',
-    tamano: '',
-    precio_venta: '',
-    stock: '',
-    descripcion: '',
-    proveedor_id: ''
-  };
-  compraNuevaMonto:number=0;
-
-  proveedor_asignado:string='Sin asignar';
-  proveedor_asignadoId:string='';
+  proveedor_asignado: string = 'Sin asignar';
+  proveedor_asignadoId: string = '';
   fechaActual = new Date();
-  usuario_id:string='67cd3ffb2b98c15b3b2e9ba2';
+  usuario_id: string = '67cd3ffb2b98c15b3b2e9ba2';
   proveedor_id: string = '';
+
+  // Variables para el escáner de código de barras
+  barcodeTimeout: any;
+  lastScannedValue: string = '';
+  barcodeDebounceTime: number = 300; // Tiempo en milisegundos para el debounce
 
   constructor(
     private fb: FormBuilder,
@@ -132,7 +117,6 @@ export class CompraListComponent implements OnInit {
     this.loadInitialData();
   }
 
-  // Métodos de inicialización
   private initializeFormWithCurrentDate(): void {
     const fechaActual = new Date();
     this.compraForm.patchValue({ fecha: fechaActual });
@@ -173,6 +157,7 @@ export class CompraListComponent implements OnInit {
       usuario_nombre: this.findUsuarioName(compra.usuario_id)
     }));
   }
+
   private createHistorialVenta(compra: Compra): HistorialCompra {
     let detalle = this.findDetalleCompra(compra._id);
     let producto = detalle ? this.findProduct(detalle.producto_id) : null;
@@ -180,7 +165,7 @@ export class CompraListComponent implements OnInit {
     let proveedor = this.findProveedor(compra.proveedor_id);
 
     return {
-      proveedor: proveedor?.nombre || '',//this.findClienteName(venta.cliente_id),
+      proveedor: proveedor?.nombre || '',
       producto: producto?.nombre || '',
       descripcion: producto?.descripcion || '',
       tamano: producto?.tamano || '',
@@ -210,7 +195,8 @@ export class CompraListComponent implements OnInit {
     if (!detalle) return 0;
     return Number(detalle.cantidad || 0) * Number(detalle.precio_compra || 0);
   }
-  private findProveedor(proveedor_id: string):Proveedor | undefined{
+
+  private findProveedor(proveedor_id: string): Proveedor | undefined {
     return this.proveedors.find(p => p._id === proveedor_id);
   }
 
@@ -222,10 +208,12 @@ export class CompraListComponent implements OnInit {
   }
 
   loadProductos(): void {
+    console.log('Cargando productos...');
     this.productoService.getAll().subscribe({
       next: (data) => {
         this.productos = data;
         this.selected_producto = this.mapToSelectOptions(data, 'nombre');
+        console.log('Productos cargados:', this.productos);
       },
       error: (err) => console.error('Error al cargar productos:', err)
     });
@@ -438,6 +426,14 @@ export class CompraListComponent implements OnInit {
     return date.toISOString();
   }
 
+  formatDatePicker(date: Date): string {
+    return new Intl.DateTimeFormat('es-PE', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric'
+    }).format(date);
+  }
+
   // Métodos de manejo de productos
   calculateNewProductStock(producto_id: string, cantidad: string): void {
     this.productoService.getById(producto_id).subscribe({
@@ -488,7 +484,8 @@ export class CompraListComponent implements OnInit {
   private showMessage(severity: string, summary: string, detail: string): void {
     this.messageService.add({ severity, summary, detail });
   }
-  onAddProveedorToBuy($event:any) {
+
+  onAddProveedorToBuy($event: any) {
     let proveedor = $event.value;
     this.proveedor_asignado = proveedor.label;
     this.proveedor_asignadoId = proveedor.value;
@@ -500,82 +497,65 @@ export class CompraListComponent implements OnInit {
       proveedor_id: this.proveedor_id
     }));
   }
-  formatDatePicker(date: Date): string {
 
-    return new Intl.DateTimeFormat('es-PE', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    }).format(date);
-  }
-  realizarCompra(){
-    this.mode ='Nuevo';
+  realizarCompra() {
+    this.mode = 'Nuevo';
     const fecha = this.formatDatePicker(this.fechaActual);
-    console.log(fecha);
-    let compraData={
-      _id:null,
-      fecha:'',
-      total:'',
-      proveedor_id:'',
-      usuario_id:'',
-      producto_id:'',
-      cantidad:'',
-      precio:'',
-    }
+
     this.itemsCompra.forEach(item => {
-      compraData={
-        _id:null,
-        fecha:fecha,
-        total:item.subtotal,
-        proveedor_id:this.proveedor_id,
-        usuario_id:this.usuario_id,
-        producto_id:item.producto_id,
-        cantidad:item.stock,
-        precio:item.precio_compra,
-      }
-      console.log(JSON.stringify(compraData,null,2))
+      const compraData = {
+        _id: null,
+        fecha: fecha,
+        total: item.subtotal,
+        proveedor_id: this.proveedor_id,
+        usuario_id: this.usuario_id,
+        producto_id: item.producto_id,
+        cantidad: item.stock,
+        precio: item.precio_compra
+      };
+
       this.saveCompra(compraData);
     });
-    console.log('-------------MASCOTAS------');
-    //console.log(JSON.stringify(this.mascotas,null,2));
-    console.log('-------------CLIENTES------');
-    //console.log(JSON.stringify(this.clientes,null,2));
-    console.log('-------------ITEM-VENTAS------');
-    console.log(JSON.stringify(this.itemsCompra,null,2));
 
-    //this.saveVenta(ventaData);
+    // Limpiar la lista después de realizar la compra
+    this.itemsCompra = [];
+    this.compraNuevaMonto = 0;
   }
+
   onCheckboxTogglex(): void {
-    console.log(JSON.stringify(this.selected_checkbox_producto, null, 2));
     let montos: number[] = this.selected_checkbox_producto.map(item => {
       return parseInt(item.precio_compra) * parseInt(item.stock);
     });
     this.compraNuevaMonto = montos.reduce((total, monto) => total + monto, 0);
   }
-  onAddProductToBuy($event:any):void{
-    const productoId = $event.value;
-    // Buscar el producto en la lista completa
+
+  searchProduct($event: any): void {
+    let productoId = $event.value;
+    this.onAddProductToBuy(productoId);
+  }
+
+  onAddProductToBuy(productoId: any): void {
     const productoSeleccionado = this.productos.find(p => p._id === productoId);
     if (!productoSeleccionado) {
       console.warn('Producto no encontrado');
       return;
     }
-    // Verificar si el producto ya está en itemsVenta
+
     const itemExistenteIndex = this.itemsCompra.findIndex(item => item._id === productoId);
 
     if (itemExistenteIndex >= 0) {
-      // Si existe, incrementar cantidad
-      this.itemsCompra[itemExistenteIndex].stock = String(Number(this.itemsCompra[itemExistenteIndex].stock)+1);
-      this.itemsCompra[itemExistenteIndex].subtotal = String(Number(this.itemsCompra[itemExistenteIndex].precio_compra) * Number(this.itemsCompra[itemExistenteIndex].stock));
-
+      this.itemsCompra[itemExistenteIndex].stock = String(Number(this.itemsCompra[itemExistenteIndex].stock) + 1);
+      this.itemsCompra[itemExistenteIndex].subtotal = String(
+        Number(this.itemsCompra[itemExistenteIndex].precio_compra) *
+        Number(this.itemsCompra[itemExistenteIndex].stock)
+      );
     } else {
-      // Si no existe, agregar nuevo item
       this.itemsCompra.push({
         _id: productoSeleccionado._id,
-        usuario_id:this.usuario_id,
-        proveedor_id:'',
+        usuario_id: this.usuario_id,
+        proveedor_id: this.proveedor_id,
         proveedor: this.proveedor_asignado,
-        producto_id:productoId,
+        producto_id: productoId,
         nombre: productoSeleccionado.nombre,
         descripcion: productoSeleccionado.descripcion,
         precio_compra: productoSeleccionado.precio_venta,
@@ -585,19 +565,64 @@ export class CompraListComponent implements OnInit {
       });
     }
 
+    this.calcularTotalCompra();
   }
 
-  onUpdateProductToBuyQuantity(p:itemsCompra,i:number){
-    console.log("onUpdateProductToBuyQuantity"+p.stock+'  '+i)
+  onUpdateProductToBuyQuantity(p: itemsCompra, i: number) {
     this.itemsCompra[i].stock = p.stock;
-    this.itemsCompra[i].subtotal = String(Number(this.itemsCompra[i].precio_compra) * Number(this.itemsCompra[i].stock));
-
+    this.itemsCompra[i].subtotal = String(
+      Number(this.itemsCompra[i].precio_compra) *
+      Number(this.itemsCompra[i].stock)
+    );
+    this.calcularTotalCompra();
   }
 
-  onUpdateProductToBuyPrice(p:itemsCompra,i:number){
-    console.log("onUpdateProductToBuyPrice"+p.precio_compra+'  '+i)
+  onUpdateProductToBuyPrice(p: itemsCompra, i: number) {
     this.itemsCompra[i].precio_compra = p.precio_compra;
-    this.itemsCompra[i].subtotal = String(Number(this.itemsCompra[i].precio_compra) * Number(this.itemsCompra[i].stock));
+    this.itemsCompra[i].subtotal = String(
+      Number(this.itemsCompra[i].precio_compra) *
+      Number(this.itemsCompra[i].stock)
+    );
+    this.calcularTotalCompra();
   }
+
+  private calcularTotalCompra(): void {
+    this.compraNuevaMonto = this.itemsCompra.reduce((total, item) => {
+      return total + (Number(item.precio_compra) * Number(item.stock));
+    }, 0);
+  }
+
+  // Métodos para el escáner de código de barras
+// Métodos para el escáner de código de barras
+  onBarcodeInput(event: Event): void {
+    clearTimeout(this.barcodeTimeout);
+    const input = event.target as HTMLInputElement;
+    this.lastScannedValue = input.value;
+
+    this.barcodeTimeout = setTimeout(() => {
+      if (this.lastScannedValue && this.lastScannedValue.length > 0) {
+        this.searchProductBarcode(this.lastScannedValue);
+        input.value = '';
+      }
+    }, this.barcodeDebounceTime);
+  }
+
+  searchProductBarcode(codigo_barras: any): void {
+    console.log('Buscando producto con código de barras:', codigo_barras);
+
+    const producto = this.productos.find(p =>
+      p.codigo_barras?.toString().trim() === codigo_barras.toString().trim()
+    );
+
+    if (producto) {
+      console.log('Producto encontrado:', producto);
+      this.onAddProductToBuy(producto._id);
+    } else {
+      console.warn('Producto no encontrado con código:', codigo_barras);
+      this.showMessage('warn', 'Producto no encontrado', `No se encontró un producto con código ${codigo_barras}`);
+    }
+  }
+
+
 
 }

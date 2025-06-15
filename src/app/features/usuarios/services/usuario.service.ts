@@ -25,6 +25,10 @@ export class UsuarioService {
     return this.http.post<Usuario>(`${this.apiUrl}/create`, data);
   }
 
+  login(data: Usuario): Observable<Usuario> {
+    return this.http.post<Usuario>(`${this.apiUrl}/login`, data);
+  }
+
   update(id: string, data: Usuario): Observable<Usuario> {
     return this.http.put<Usuario>(`${this.apiUrl}/update/${id}`, data);
   }
