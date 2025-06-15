@@ -22,27 +22,31 @@ import { FormComponent } from './pages/form/form.component';
 
 // Servicios
 import { PageService } from './services/page.service';
+import {Menu_topsModule} from "../menu_tops/menu_tops.module";
+import {Module_box_titlesModule} from "../module_box_titles/module_box_titles.module";
 
 @NgModule({
   declarations: [
     PageListComponent,
     FormComponent
   ],
-  imports: [
-    CommonModule,
-    FormsModule,
-    ReactiveFormsModule,
-    HttpClientModule,
-    TableModule,
-    CardModule,
-    ButtonModule,
-    InputTextModule,
-    DialogModule,
-    DropdownModule,
-    ToastModule,
-    ConfirmDialogModule,
-    CalendarModule
-  ],
+    imports: [
+        CommonModule,
+        FormsModule,
+        ReactiveFormsModule,
+        HttpClientModule,
+        TableModule,
+        CardModule,
+        ButtonModule,
+        InputTextModule,
+        DialogModule,
+        DropdownModule,
+        ToastModule,
+        ConfirmDialogModule,
+        CalendarModule,
+        Menu_topsModule,
+        Module_box_titlesModule
+    ],
   providers: [
     MessageService,
     ConfirmationService,

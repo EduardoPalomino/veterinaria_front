@@ -42,7 +42,7 @@ export class UsuarioListComponent implements OnInit {
 
   ngOnInit(): void {
      this.loadRols();
-    this.loadUsuarios();
+
   }
 
   loadUsuarios() {
@@ -68,6 +68,7 @@ loadRols() {
           label: rol.descripcion,
           value: rol._id
         }));
+        this.loadUsuarios();
       },
       error: (err) => {
         console.error('Error al cargar rols:', err);
